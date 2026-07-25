@@ -1,0 +1,23 @@
+# macOS metadata
+.DS_Store
+._*
+
+# Editor and temporary files
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+
+# Generated release artifacts
+dist/
+
+# Generated synthetic Thunderbird profile and screenshots
+.demo/
+
+# Local agent design and implementation plans
+docs/superpowers/
+
+# Python cache files created by validation tooling
+__pycache__/
+*.py[cod]

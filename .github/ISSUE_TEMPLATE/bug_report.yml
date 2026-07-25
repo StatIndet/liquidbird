@@ -1,0 +1,113 @@
+name: Visual bug
+description: Report a LiquidBird styling or compatibility problem
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting a problem. Remove personal mail, addresses, account names, and profile paths from screenshots and logs.
+  - type: input
+    id: liquidbird_version
+    attributes:
+      label: LiquidBird version
+      description: Use the release tag, for example 0.1.0.
+      placeholder: 0.1.0
+    validations:
+      required: true
+  - type: input
+    id: thunderbird_version
+    attributes:
+      label: Thunderbird version and build
+      description: Copy the complete value from Thunderbird → About Thunderbird.
+      placeholder: Thunderbird Beta 154.0, build 15426.7.21
+    validations:
+      required: true
+  - type: input
+    id: operating_system
+    attributes:
+      label: Operating system and version
+      description: macOS is supported; reports for other platforms are best-effort.
+      placeholder: macOS 27.0, Windows 11 24H2, or Ubuntu 26.04
+    validations:
+      required: true
+  - type: dropdown
+    id: appearance
+    attributes:
+      label: Appearance
+      options:
+        - Light
+        - Dark
+        - Auto (include the active appearance below)
+    validations:
+      required: true
+  - type: dropdown
+    id: density
+    attributes:
+      label: Thunderbird density
+      options:
+        - Compact
+        - Default
+        - Touch
+    validations:
+      required: true
+  - type: dropdown
+    id: message_list
+    attributes:
+      label: Message-list view
+      options:
+        - Card view
+        - Table view
+        - Not applicable
+    validations:
+      required: true
+  - type: dropdown
+    id: pane_layout
+    attributes:
+      label: Pane layout
+      options:
+        - Vertical view
+        - Classic view
+        - Wide view
+        - Not applicable
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: Explain the visible result, what you expected, and where in Thunderbird it occurs.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction steps
+      placeholder: |
+        1. Open …
+        2. Select …
+        3. Observe …
+    validations:
+      required: true
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Sanitized screenshot (optional)
+      description: If the problem is visible, drag in a screenshot with all personal information removed or obscured.
+  - type: textarea
+    id: customizations
+    attributes:
+      label: Other customizations and add-ons
+      description: List other userChrome/userContent rules and add-ons, or write "None".
+    validations:
+      required: true
+  - type: checkboxes
+    id: isolation
+    attributes:
+      label: Isolation checks
+      options:
+        - label: I reproduced this with personal `custom.css` rules removed, if practical.
+        - label: I confirmed that disabling LiquidBird removes the problem, if practical.
+        - label: I removed personal data from everything attached to this report.
+          required: true

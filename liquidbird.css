@@ -1,0 +1,2874 @@
+/*
+ * LiquidBird — macOS 27 Liquid Glass for Thunderbird
+ * https://github.com/Deathbyteacup/fluentbird was used as an MIT-licensed
+ * compatibility reference for Thunderbird's current chrome selectors.
+ * Interface glyphs are from Lucide (ISC). See THIRD_PARTY_NOTICES.md.
+ */
+
+/* ========================================================================== */
+/* Design tokens                                                              */
+/* ========================================================================== */
+
+:root {
+  color-scheme: light dark !important;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif !important;
+  font-size: 13px !important;
+  line-height: 1.35 !important;
+  font-optical-sizing: auto;
+
+  --lb-accent: AccentColor;
+  --lb-accent-text: AccentColorText;
+  --lb-label: CanvasText;
+  --lb-secondary-label: color-mix(in srgb, CanvasText 72%, transparent);
+  --lb-tertiary-label: color-mix(in srgb, CanvasText 54%, transparent);
+  --lb-quaternary-label: color-mix(in srgb, CanvasText 36%, transparent);
+  --lb-separator: color-mix(in srgb, CanvasText 18%, transparent);
+  --lb-strong-separator: color-mix(in srgb, CanvasText 30%, transparent);
+  --lb-content: light-dark(rgb(246 246 247), rgb(29 29 31));
+  --lb-mail-list-background: light-dark(rgb(255 255 255), rgb(29 29 31));
+  --lb-content-elevated: light-dark(rgb(255 255 255), rgb(44 44 46));
+  --lb-surface: light-dark(rgb(255 255 255 / 0.78), rgb(54 54 57 / 0.74));
+  --lb-surface-solid: light-dark(rgb(255 255 255), rgb(48 48 50));
+  --lb-surface-raised: light-dark(rgb(255 255 255 / 0.92), rgb(64 64 67 / 0.88));
+  --lb-sidebar-fallback: light-dark(rgb(235 235 238 / 0.82), rgb(39 39 42 / 0.82));
+  --lb-control-fill: light-dark(rgb(255 255 255 / 0.66), rgb(255 255 255 / 0.1));
+  --lb-control-fill-hover: light-dark(rgb(255 255 255 / 0.9), rgb(255 255 255 / 0.16));
+  --lb-control-fill-pressed: light-dark(rgb(0 0 0 / 0.12), rgb(255 255 255 / 0.2));
+  --lb-control-border: light-dark(rgb(0 0 0 / 0.12), rgb(255 255 255 / 0.16));
+  --lb-control-highlight: light-dark(rgb(255 255 255 / 0.82), rgb(255 255 255 / 0.12));
+  --lb-toggle-fill: light-dark(rgb(255 255 255), rgb(255 255 255 / 0.22));
+  --lb-toggle-label: light-dark(rgb(28 28 30), rgb(255 255 255 / 0.94));
+  --lb-hover: color-mix(in srgb, CanvasText 8%, transparent);
+  --lb-pressed: color-mix(in srgb, CanvasText 14%, transparent);
+  --lb-selection: color-mix(in srgb, AccentColor 20%, transparent);
+  --lb-selection-strong: color-mix(in srgb, AccentColor 32%, transparent);
+  --lb-selection-inactive: color-mix(in srgb, CanvasText 12%, transparent);
+  --lb-focus-ring: color-mix(in srgb, AccentColor 72%, transparent);
+  --lb-critical: light-dark(rgb(215 0 21), rgb(255 69 58));
+  --lb-warning: light-dark(rgb(178 80 0), rgb(255 159 10));
+  --lb-success: light-dark(rgb(0 128 55), rgb(48 209 88));
+  --lb-draft: light-dark(rgb(137 68 171), rgb(191 90 242));
+  --lb-icon-primary: var(--lb-label);
+  --lb-icon-secondary: var(--lb-secondary-label);
+  --lb-icon-tertiary: var(--lb-tertiary-label);
+  --lb-icon-selected: var(--lb-accent);
+  --lb-icon-on-accent: var(--lb-accent-text);
+  --lb-icon-warning: var(--lb-warning);
+  --lb-icon-destructive: var(--lb-critical);
+  --lb-icon-success: var(--lb-success);
+  --lb-radius-window: 18px;
+  --lb-radius-surface: 14px;
+  --lb-radius-rectangle: 10px;
+  --lb-radius-field: 8px;
+  --lb-radius-small: 7px;
+  --lb-radius-pill: 999px;
+  --lb-radius-circle: 50%;
+  --lb-control-height: 28px;
+  --lb-toolbar-control-height: 30px;
+  --lb-space-control-size: 36px;
+  --lb-titlebar-height: 34px;
+  --lb-pane-header-height: 40px;
+  --lb-pane-header-padding-block: 5px;
+  --lb-pane-header-control-size: 30px;
+  --lb-pane-header-segment-size: 28px;
+  --lb-shadow-1: 0 1px 1px rgb(0 0 0 / 0.07), 0 2px 8px rgb(0 0 0 / 0.08);
+  --lb-shadow-2: 0 14px 40px rgb(0 0 0 / 0.2), 0 3px 10px rgb(0 0 0 / 0.14);
+  --lb-scroll-edge: 0 1px 0 var(--lb-separator), 0 10px 22px -20px rgb(0 0 0 / 0.7);
+  --lb-spring: 360ms linear(
+    0, 0.016, 0.064, 0.141, 0.242, 0.36, 0.488, 0.615,
+    0.733, 0.834, 0.913, 0.967, 0.997, 1.009, 1.011, 1.007, 1.003, 1
+  );
+
+  /* Thunderbird Bolt tokens inherit into many web components/shadow roots. */
+  --color-surface-base: var(--lb-content) !important;
+  --color-surface-subtle: color-mix(in srgb, var(--lb-content) 88%, CanvasText 4%) !important;
+  --color-surface-lower: color-mix(in srgb, var(--lb-content) 92%, CanvasText 6%) !important;
+  --color-surface-raised: var(--lb-surface-solid) !important;
+  --color-surface-deep: var(--lb-pressed) !important;
+  --color-surface-border: var(--lb-separator) !important;
+  --color-surface-border-intense: var(--lb-strong-separator) !important;
+  --color-primary-soft: var(--lb-selection) !important;
+  --color-primary-default: var(--lb-accent) !important;
+  --color-primary-hover: color-mix(in srgb, var(--lb-accent) 84%, CanvasText) !important;
+  --color-primary-pressed: color-mix(in srgb, var(--lb-accent) 70%, CanvasText) !important;
+  --color-text-base: var(--lb-label) !important;
+  --color-text-secondary: var(--lb-secondary-label) !important;
+  --color-text-muted: var(--lb-tertiary-label) !important;
+  --color-text-highlight: var(--lb-accent) !important;
+  --color-text-critical: var(--lb-critical) !important;
+  --color-text-success: var(--lb-success) !important;
+  --button-border-radius: var(--lb-radius-rectangle) !important;
+  --tree-card-border-radius: var(--lb-radius-rectangle) !important;
+  --toolbarbutton-border-radius: var(--lb-radius-pill) !important;
+  --splitter-color: var(--lb-separator) !important;
+}
+
+:root[uidensity="compact"] {
+  --lb-control-height: 26px;
+  --lb-toolbar-control-height: 28px;
+  --lb-space-control-size: 32px;
+  --lb-titlebar-height: 32px;
+  --lb-pane-header-height: 38px;
+  --lb-pane-header-padding-block: 4px;
+}
+
+:root[uidensity="touch"] {
+  --lb-control-height: 32px;
+  --lb-toolbar-control-height: 34px;
+  --lb-space-control-size: 40px;
+  --lb-titlebar-height: 40px;
+  --lb-pane-header-height: 44px;
+  --lb-pane-header-padding-block: 5px;
+  --lb-pane-header-control-size: 34px;
+  --lb-pane-header-segment-size: 32px;
+}
+
+/* ========================================================================== */
+/* Window, titlebar, and layout                                                */
+/* ========================================================================== */
+
+#messengerWindow,
+#messengerBody,
+#messengerBox,
+#mail-toolbox,
+#navigation-toolbox {
+  background-color: transparent !important;
+  background-image: none !important;
+}
+
+#messengerBody {
+  overflow: hidden !important;
+  border-radius: 0 !important;
+}
+
+#titlebar,
+#tabs-toolbar,
+#toolbar-menubar {
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+#tabs-toolbar {
+  box-sizing: border-box !important;
+  min-block-size: 46px !important;
+  block-size: 46px !important;
+  padding: 5px 8px !important;
+  background: transparent !important;
+}
+
+@media (-moz-platform: macos) {
+  #folderPane,
+  #spacesToolbar {
+    appearance: -moz-sidebar !important;
+    background: transparent !important;
+  }
+
+  #button-appmenu,
+  .kbd-container {
+    display: none !important;
+  }
+}
+
+splitter,
+.splitter,
+#folderPaneSplitter,
+#threadPaneSplitter {
+  min-width: 1px !important;
+  width: 1px !important;
+  border: 0 !important;
+  background: var(--lb-separator) !important;
+}
+
+splitter:hover,
+.splitter:hover {
+  background: color-mix(in srgb, var(--lb-accent) 65%, transparent) !important;
+}
+
+/* The unified toolbar is the primary Liquid Glass control layer. */
+unified-toolbar {
+  border: 0 !important;
+  background: var(--lb-surface) !important;
+  box-shadow: none !important;
+  backdrop-filter: blur(28px) saturate(150%) !important;
+}
+
+#unifiedToolbarContainer,
+#unifiedToolbar {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+#unifiedToolbar {
+  padding-block: 0 !important;
+}
+
+#unifiedToolbarContent {
+  box-sizing: border-box !important;
+  min-height: var(--lb-titlebar-height) !important;
+  min-block-size: var(--lb-titlebar-height) !important;
+  padding-block: 2px !important;
+}
+
+#unifiedToolbar :is(.toolbar-button, .unified-toolbar-button) {
+  min-height: var(--lb-toolbar-control-height) !important;
+  border-color: transparent !important;
+  border-radius: var(--lb-radius-pill) !important;
+  background: transparent !important;
+  color: var(--lb-icon-primary) !important;
+  box-shadow: none !important;
+}
+
+#unifiedToolbar :is(.toolbar-button, .unified-toolbar-button):hover {
+  background: var(--lb-control-fill-hover) !important;
+}
+
+#unifiedToolbar :is(.toolbar-button, .unified-toolbar-button):is([checked="true"], [aria-pressed="true"], .active) {
+  background: var(--lb-toggle-fill) !important;
+  color: var(--lb-toggle-label) !important;
+}
+
+/* ========================================================================== */
+/* Tabs                                                                       */
+/* ========================================================================== */
+
+#tabmail-tabs,
+#tabmail-arrowscrollbox {
+  min-block-size: 36px !important;
+  block-size: 36px !important;
+  margin: 0 !important;
+}
+
+#tabmail-arrowscrollbox {
+  gap: 5px !important;
+}
+
+/* Keep the 28px capsules centered inside the taller tab row. */
+#tabmail-arrowscrollbox::part(scrollbox),
+#tabmail-arrowscrollbox::part(items-wrapper) {
+  min-block-size: 36px !important;
+  block-size: 36px !important;
+}
+
+#tabmail-arrowscrollbox::part(items-wrapper) {
+  align-items: center !important;
+}
+
+.tabmail-tab {
+  min-block-size: 28px !important;
+  block-size: 28px !important;
+  max-block-size: 28px !important;
+  /* Optically center the capsule while reserving 2px of extra room below
+     for its downward-cast shadow. The total block size remains 36px. */
+  margin: 3px 2px 5px !important;
+  border: 0 !important;
+  border-radius: var(--lb-radius-pill) !important;
+  overflow: hidden !important;
+  transition: background-color 140ms ease, transform 90ms ease-out !important;
+}
+
+.tabmail-tab:hover:not([selected="true"]) .tab-background {
+  background: var(--lb-hover) !important;
+}
+
+.tabmail-tab[selected="true"] .tab-background,
+.tab-background[selected="true"] {
+  border: 1px solid var(--lb-control-border) !important;
+  border-radius: var(--lb-radius-pill) !important;
+  background: var(--lb-control-fill) !important;
+  box-shadow: none !important;
+}
+
+.tabmail-tab:active {
+  transform: scale(0.975) !important;
+}
+
+.tab-line,
+.tabmail-tab::after,
+.tabmail-tab::before {
+  display: none !important;
+}
+
+.tab-content {
+  padding-inline: 9px 6px !important;
+}
+
+.tab-text {
+  font-size: 0.92rem !important;
+  font-weight: 500 !important;
+  letter-spacing: -0.005em !important;
+}
+
+.tab-close-button {
+  width: 20px !important;
+  height: 20px !important;
+  padding: 4px !important;
+  border-radius: 50% !important;
+  opacity: 0 !important;
+  transition: opacity 120ms ease, background-color 120ms ease !important;
+}
+
+.tabmail-tab:is(:hover, [selected="true"]) .tab-close-button,
+.tab-close-button:focus-visible {
+  opacity: 0.72 !important;
+}
+
+.tab-close-button:hover {
+  background: var(--lb-hover) !important;
+  opacity: 1 !important;
+}
+
+/* ========================================================================== */
+/* Spaces toolbar                                                             */
+/* ========================================================================== */
+
+#spacesToolbar {
+  box-sizing: border-box !important;
+  inline-size: var(--spaces-total-width, 45px) !important;
+  padding: var(--spaces-padding, 7px) !important;
+  border: 0 !important;
+  border-inline-end: 1px solid var(--lb-separator) !important;
+  background: var(--lb-sidebar-fallback) !important;
+}
+
+#spacesToolbar .spaces-toolbar-button,
+#spacesToolbar :is(#mailButton, #addressBookButton, #calendarButton, #tasksButton, #chatButton, #settingsButton) {
+  position: relative !important;
+  box-sizing: content-box !important;
+  inline-size: var(--spaces-icon-size, 20px) !important;
+  block-size: var(--spaces-icon-size, 20px) !important;
+  min-inline-size: var(--spaces-icon-size, 20px) !important;
+  min-block-size: var(--spaces-icon-size, 20px) !important;
+  margin: 0 !important;
+  padding: var(--spaces-button-padding, 5px) !important;
+  border: 0 !important;
+  border-radius: var(--lb-radius-circle) !important;
+  background: transparent !important;
+  color: var(--lb-icon-secondary) !important;
+  transition: color 140ms ease, background-color 140ms ease, transform 90ms ease-out !important;
+}
+
+#spacesToolbar .spaces-toolbar-button:hover,
+#spacesToolbar :is(#mailButton, #addressBookButton, #calendarButton, #tasksButton, #chatButton, #settingsButton):hover {
+  background: var(--lb-hover) !important;
+  color: var(--lb-icon-primary) !important;
+}
+
+#spacesToolbar .spaces-toolbar-button[checked="true"],
+#spacesToolbar .spaces-toolbar-button.current,
+#spacesToolbar :is(#mailButton, #addressBookButton, #calendarButton, #tasksButton, #chatButton, #settingsButton):is(
+  .current,
+  [checked="true"],
+  [selected="true"],
+  [aria-pressed="true"]
+) {
+  border-color: transparent !important;
+  background: var(--lb-control-fill) !important;
+  color: var(--lb-icon-selected) !important;
+  box-shadow: inset 0 0 0 1px var(--lb-control-border), var(--lb-shadow-1) !important;
+}
+
+#spacesToolbar .spaces-toolbar-button:active,
+#spacesToolbar :is(#mailButton, #addressBookButton, #calendarButton, #tasksButton, #chatButton, #settingsButton):active {
+  transform: scale(0.93) !important;
+}
+
+#spacesToolbar :is(#mailButton, #addressBookButton, #calendarButton, #tasksButton, #chatButton, #settingsButton) img {
+  display: none !important;
+}
+
+#spacesToolbar :is(#mailButton, #addressBookButton, #calendarButton, #tasksButton, #chatButton, #settingsButton)::before {
+  content: "" !important;
+  display: block !important;
+  width: var(--spaces-icon-size, 20px) !important;
+  height: var(--spaces-icon-size, 20px) !important;
+  margin: auto !important;
+  background: currentColor !important;
+  mask-repeat: no-repeat !important;
+  mask-position: center !important;
+  mask-size: contain !important;
+}
+
+#mailButton::before { mask-image: url("Icons/mail.svg") !important; }
+#addressBookButton::before { mask-image: url("Icons/contact.svg") !important; }
+#calendarButton::before { mask-image: url("Icons/calendar-days.svg") !important; }
+#tasksButton::before { mask-image: url("Icons/list-checks.svg") !important; }
+#chatButton::before { mask-image: url("Icons/messages-square.svg") !important; }
+#settingsButton::before { mask-image: url("Icons/settings.svg") !important; }
+
+.settings-btn-container #settingsButton,
+.settings-btn-container:hover #settingsButton {
+  font-size: 0 !important;
+}
+
+/* ========================================================================== */
+/* Sidebar and folder tree                                                    */
+/* ========================================================================== */
+
+#folderPane {
+  border: 0 !important;
+  background: var(--lb-sidebar-fallback) !important;
+}
+
+#folderPaneHeader,
+#folderPaneHeaderBar,
+.folder-pane-header {
+  box-sizing: border-box !important;
+  height: var(--lb-pane-header-height) !important;
+  block-size: var(--lb-pane-header-height) !important;
+  min-height: var(--lb-pane-header-height) !important;
+  min-block-size: var(--lb-pane-header-height) !important;
+  max-block-size: var(--lb-pane-header-height) !important;
+  padding-block: var(--lb-pane-header-padding-block) !important;
+  padding-inline: 9px !important;
+  border: 0 !important;
+  background: transparent !important;
+}
+
+/* Beta 154 uses space-between for all three header buttons. Group Compose and
+ * More on the trailing edge, matching a macOS sidebar toolbar. */
+#folderPaneHeaderBar {
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 4px !important;
+  overflow: visible !important;
+}
+
+#folderPaneGetMessages,
+#folderPaneWriteMessage,
+#folderPaneMoreButton {
+  position: relative !important;
+  display: grid !important;
+  place-items: center !important;
+  box-sizing: border-box !important;
+  width: var(--lb-pane-header-control-size) !important;
+  min-width: var(--lb-pane-header-control-size) !important;
+  height: var(--lb-pane-header-control-size) !important;
+  min-height: var(--lb-pane-header-control-size) !important;
+  max-height: var(--lb-pane-header-control-size) !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border-radius: var(--lb-radius-circle) !important;
+  color: var(--lb-icon-secondary) !important;
+  overflow: visible !important;
+}
+
+#folderPaneGetMessages {
+  margin-inline-end: auto !important;
+}
+
+#folderPaneMoreButton {
+  background-image: none !important;
+  color: var(--lb-icon-secondary) !important;
+}
+
+#folderPaneGetMessages:not(:disabled):hover,
+#folderPaneMoreButton:not(:disabled):is(:hover, [open="true"]) {
+  background: var(--lb-control-fill-hover) !important;
+  color: var(--lb-icon-primary) !important;
+  box-shadow: inset 0 1px var(--lb-control-highlight) !important;
+}
+
+#folderPaneWriteMessage {
+  border-color: transparent !important;
+  background: var(--lb-accent) !important;
+  color: var(--lb-icon-on-accent) !important;
+  /* Thunderbird localizes this button with visible text. Keep that text as the
+   * accessible name, but render this compact toolbar action as icon-only. */
+  font-size: 0 !important;
+  line-height: 0 !important;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.12) !important;
+}
+
+#folderPaneWriteMessage:not(:disabled):hover {
+  background: color-mix(in srgb, var(--lb-accent) 88%, CanvasText) !important;
+  color: var(--lb-icon-on-accent) !important;
+  box-shadow: inset 0 1px rgb(255 255 255 / 0.2), 0 2px 4px rgb(0 0 0 / 0.18) !important;
+}
+
+#folderPaneGetMessages img {
+  display: none !important;
+}
+
+#folderPaneGetMessages {
+  background-image: none !important;
+}
+
+#folderPaneWriteMessage {
+  background-image: none !important;
+}
+
+#folderPaneGetMessages::before,
+#folderPaneWriteMessage::before,
+#folderPaneMoreButton::before {
+  content: "" !important;
+  display: block !important;
+  grid-area: 1 / 1 !important;
+  width: 16px !important;
+  height: 16px !important;
+  margin: 0 !important;
+  background: currentColor !important;
+  mask-repeat: no-repeat !important;
+  mask-position: center !important;
+  mask-size: contain !important;
+}
+
+#folderPaneGetMessages::before { mask-image: url("Icons/refresh-cw.svg") !important; }
+#folderPaneWriteMessage::before {
+  mask-image: url("Icons/square-pen.svg") !important;
+  transform: translateY(2px) !important;
+}
+#folderPaneMoreButton::before { mask-image: url("Icons/ellipsis.svg") !important; }
+
+#folderTree {
+  padding: 3px 7px 12px !important;
+  background: transparent !important;
+}
+
+/* Thunderbird's sticky folder-tree scroll cue reads as an unwanted divider. */
+#folderTree.sidebar-panel-scroll::before,
+#folderTree.sidebar-panel-scroll::after {
+  display: none !important;
+  content: none !important;
+}
+
+#folderTree li > .container {
+  min-height: calc(var(--lb-control-height) + 1px) !important;
+  margin-block: 1px !important;
+  padding-inline-end: 7px !important;
+  border: 1px solid transparent !important;
+  border-radius: var(--lb-radius-small) !important;
+  transition: background-color 120ms ease, transform 90ms ease-out !important;
+}
+
+#folderTree li > .container:hover {
+  background: var(--lb-hover) !important;
+}
+
+#folderTree li.selected > .container,
+#folderTree li.selected.current > .container {
+  border-color: var(--lb-control-border) !important;
+  background: var(--lb-control-fill) !important;
+  color: var(--lb-label) !important;
+  box-shadow: inset 0 1px var(--lb-control-highlight) !important;
+}
+
+#folderTree li.selected.current > .container::before {
+  display: none !important;
+}
+
+#folderTree:focus-within li.selected.current > .container {
+  border-color: transparent !important;
+  background: var(--lb-accent) !important;
+  color: var(--lb-accent-text) !important;
+  box-shadow: none !important;
+}
+
+/* Thunderbird colors folders containing newly arrived messages blue. That
+ * status color must yield to the foreground color of an active blue row. */
+#folderTree:focus-within li.selected.current > .container > :is(.name, .folder-size) {
+  color: var(--lb-accent-text) !important;
+}
+
+#folderTree li[data-server-type] > .container {
+  margin-top: 10px !important;
+}
+
+#folderTree li[data-server-type]:first-child > .container {
+  margin-top: 2px !important;
+}
+
+#folderTree li[data-server-type] > .container > .name {
+  font-size: 1rem !important;
+  font-weight: 650 !important;
+  letter-spacing: -0.012em !important;
+}
+
+#folderTree :is(ul, ol)[role="group"] .name {
+  font-size: 0.94rem !important;
+}
+
+#folderTree li .icon {
+  content: none !important;
+  list-style-image: none !important;
+  display: block !important;
+  width: 16px !important;
+  height: 16px !important;
+  overflow: hidden !important;
+  background-image: none !important;
+  background-color: currentColor !important;
+  color: var(--lb-icon-selected) !important;
+  mask-repeat: no-repeat !important;
+  mask-position: center !important;
+  mask-size: contain !important;
+}
+
+#folderTree li[data-server-type] > .container > .icon { mask-image: url("Icons/mails.svg") !important; }
+#folderTree li[data-folder-type="inbox"] > .container > .icon { mask-image: url("Icons/inbox.svg") !important; }
+#folderTree li[data-folder-type="drafts"] > .container > .icon { mask-image: url("Icons/file-pen-line.svg") !important; color: var(--lb-draft) !important; }
+#folderTree li[data-folder-type="sent"] > .container > .icon { mask-image: url("Icons/send.svg") !important; color: var(--lb-icon-success) !important; }
+#folderTree li[data-folder-type="junk"] > .container > .icon { mask-image: url("Icons/shield-alert.svg") !important; color: var(--lb-icon-warning) !important; }
+#folderTree li[data-folder-type="trash"] > .container > .icon { mask-image: url("Icons/trash-2.svg") !important; color: var(--lb-icon-destructive) !important; }
+#folderTree li[data-folder-type="archive"] > .container > .icon { mask-image: url("Icons/archive.svg") !important; }
+#folderTree li[data-folder-type="outbox"] > .container > .icon { mask-image: url("Icons/circle-arrow-out-up-right.svg") !important; }
+#folderTree li[data-folder-type="templates"] > .container > .icon { mask-image: url("Icons/notebook-tabs.svg") !important; }
+#folderTree li[data-tag-key] > .container > .icon {
+  mask-image: url("Icons/tag.svg") !important;
+  background-color: currentColor !important;
+  color: color-mix(
+    in srgb,
+    var(--icon-color, var(--lb-icon-secondary)) 58%,
+    CanvasText
+  ) !important;
+}
+#folderTree li:not([data-folder-type]):not([data-server-type]):not([data-tag-key]) > .container > .icon { mask-image: url("Icons/folder.svg") !important; }
+
+#folderTree li:is(.selected, .current) > .container > .icon,
+#folderTree li[data-folder-type="inbox"].unread > .container > .icon {
+  color: var(--lb-icon-selected) !important;
+}
+
+#folderTree:focus-within li.selected.current > .container > .icon {
+  color: var(--lb-icon-on-accent) !important;
+}
+
+#folderTree .twisty-icon,
+#folderTree .status-icon {
+  color: var(--lb-icon-secondary) !important;
+  fill: currentColor !important;
+  stroke: currentColor !important;
+}
+
+#folderTree .unread > .container > .name {
+  font-weight: 650 !important;
+}
+
+#folderTree .unread > .container > .unread-count {
+  display: inline-flex !important;
+  min-width: 20px !important;
+  height: 18px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 6px !important;
+  border-radius: var(--lb-radius-pill) !important;
+  background: var(--lb-accent) !important;
+  color: var(--lb-accent-text) !important;
+  font-size: 0.76rem !important;
+  font-weight: 650 !important;
+  font-variant-numeric: tabular-nums !important;
+}
+
+#folderTree:focus-within li.selected.current > .container > .unread-count {
+  background: color-mix(in srgb, var(--lb-accent-text) 22%, transparent) !important;
+  color: var(--lb-accent-text) !important;
+}
+
+/* ========================================================================== */
+/* Thread pane, quick filter, and message list                                 */
+/* ========================================================================== */
+
+#threadPane,
+#threadPaneBox {
+  --layout-background-1: var(--lb-mail-list-background);
+  background: var(--lb-mail-list-background) !important;
+}
+
+#threadPaneHeaderBar {
+  position: relative !important;
+  z-index: 1 !important;
+  box-sizing: border-box !important;
+  height: var(--lb-pane-header-height) !important;
+  block-size: var(--lb-pane-header-height) !important;
+  min-height: var(--lb-pane-header-height) !important;
+  min-block-size: var(--lb-pane-header-height) !important;
+  max-block-size: var(--lb-pane-header-height) !important;
+  padding-block: var(--lb-pane-header-padding-block) !important;
+  padding-inline: 9px !important;
+  border: 0 !important;
+  background: var(--lb-surface) !important;
+  box-shadow: none !important;
+  backdrop-filter: blur(24px) saturate(150%) !important;
+}
+
+#threadPaneHeaderBar :is(button, .button) {
+  border-radius: var(--lb-radius-pill) !important;
+}
+
+#threadPaneHeaderBar :is(#threadPaneQuickFilterButton, #threadPaneDisplayButton, #displayButton) {
+  box-sizing: border-box !important;
+  width: var(--lb-pane-header-segment-size) !important;
+  min-width: var(--lb-pane-header-segment-size) !important;
+  height: var(--lb-pane-header-segment-size) !important;
+  min-height: var(--lb-pane-header-segment-size) !important;
+  max-height: var(--lb-pane-header-segment-size) !important;
+  padding: 0 !important;
+  border-radius: var(--lb-radius-circle) !important;
+  border: 0 !important;
+  background: transparent !important;
+  background-image: none !important;
+  color: var(--lb-icon-secondary) !important;
+  box-shadow: none !important;
+}
+
+#threadPaneHeaderBar .list-header-bar-container-end {
+  display: flex !important;
+  align-self: center !important;
+  box-sizing: border-box !important;
+  height: var(--lb-pane-header-control-size) !important;
+  min-height: var(--lb-pane-header-control-size) !important;
+  max-height: var(--lb-pane-header-control-size) !important;
+  overflow: visible !important;
+  gap: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 1px solid var(--lb-control-border) !important;
+  border-radius: var(--lb-radius-pill) !important;
+  background: var(--lb-control-fill) !important;
+  box-shadow: inset 0 1px var(--lb-control-highlight), 0 1px 2px rgb(0 0 0 / 0.14) !important;
+}
+
+#threadPaneQuickFilterButton > span {
+  display: none !important;
+}
+
+#threadPaneHeaderBar :is(#threadPaneQuickFilterButton, #threadPaneDisplayButton, #displayButton)::before {
+  content: "" !important;
+  display: block !important;
+  width: 16px !important;
+  height: 16px !important;
+  margin: auto !important;
+  background: currentColor !important;
+  mask-repeat: no-repeat !important;
+  mask-position: center !important;
+  mask-size: contain !important;
+}
+
+#threadPaneQuickFilterButton::before {
+  position: static !important;
+  inset: auto !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  mask-image: url("Icons/list-filter.svg") !important;
+}
+#threadPaneDisplayButton::before,
+#displayButton::before { mask-image: url("Icons/sliders-horizontal.svg") !important; }
+
+#threadPaneHeaderBar :is(#threadPaneQuickFilterButton, #threadPaneDisplayButton, #displayButton):hover {
+  background: var(--lb-control-fill-hover) !important;
+  color: var(--lb-icon-primary) !important;
+}
+
+#threadPaneHeaderBar :is(#threadPaneQuickFilterButton, #threadPaneDisplayButton, #displayButton):is([checked="true"], [aria-pressed="true"], .active) {
+  border-color: transparent !important;
+  background: var(--lb-toggle-fill) !important;
+  color: var(--lb-toggle-label) !important;
+  box-shadow: var(--lb-shadow-1) !important;
+}
+
+#quick-filter-bar,
+#quickFilterBarContainer {
+  border: 0 !important;
+  background: var(--lb-surface) !important;
+  box-shadow: var(--lb-scroll-edge) !important;
+}
+
+#quick-filter-bar {
+  padding: 2px 9px !important;
+  backdrop-filter: blur(24px) saturate(150%) !important;
+}
+
+/* The titlebar, pane header, and quick filter read as one material surface.
+ * Keep the scroll edge only on the outermost visible toolbar row. */
+#quickFilterBarContainer {
+  --lb-quick-filter-control-height: 28px;
+  align-items: center !important;
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+#quick-filter-bar input,
+#quickFilterBarContainer input {
+  min-height: 28px !important;
+  border: 1px solid var(--lb-separator) !important;
+  border-radius: var(--lb-radius-pill) !important;
+  background: var(--lb-control-fill) !important;
+  box-shadow: inset 0 1px 1px rgb(0 0 0 / 0.04) !important;
+}
+
+/* #qfb-qs-textbox is the custom-element host. Thunderbird paints the actual
+ * field inside its shadow tree, so the host itself must remain invisible. */
+#qfb-qs-textbox {
+  --lb-search-control-height: var(--lb-quick-filter-control-height);
+  --lb-search-box-shadow: inset 0 1px 1px rgb(0 0 0 / 0.05);
+  --search-padding: 6px !important;
+  align-self: center !important;
+  box-sizing: border-box !important;
+  block-size: var(--lb-quick-filter-control-height) !important;
+  min-height: var(--lb-quick-filter-control-height) !important;
+  max-block-size: var(--lb-quick-filter-control-height) !important;
+  margin-block: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Match the filter group to the adjacent search field's material and shape. */
+#quickFilterBarContainer .button-group.quickFilterButtons {
+  --button-border-color: var(--lb-control-border) !important;
+  --button-border-radius: var(--lb-radius-pill) !important;
+  align-self: center !important;
+  box-sizing: border-box !important;
+  block-size: var(--lb-quick-filter-control-height) !important;
+  min-block-size: var(--lb-quick-filter-control-height) !important;
+  max-block-size: var(--lb-quick-filter-control-height) !important;
+  margin-block: 0 !important;
+  border: 1px solid var(--lb-control-border) !important;
+  border-radius: var(--lb-radius-pill) !important;
+  background: var(--search-bar-background) !important;
+}
+
+#quick-filter-bar :is(button, .button),
+#quickFilterBarContainer :is(button, .button) {
+  box-sizing: border-box !important;
+  block-size: calc(var(--lb-quick-filter-control-height, 28px) - 2px) !important;
+  min-height: 26px !important;
+  max-block-size: calc(var(--lb-quick-filter-control-height, 28px) - 2px) !important;
+  padding-block: 0 !important;
+  border-color: transparent !important;
+  border-radius: var(--lb-radius-pill) !important;
+  background: transparent !important;
+  color: var(--lb-secondary-label) !important;
+}
+
+#quick-filter-bar :is(button, .button):hover,
+#quickFilterBarContainer :is(button, .button):hover {
+  background: var(--lb-control-fill-hover) !important;
+  color: var(--lb-label) !important;
+}
+
+#quick-filter-bar :is(button, .button):is([checked="true"], [aria-pressed="true"], .active),
+#quickFilterBarContainer :is(button, .button):is([checked="true"], [aria-pressed="true"], .active) {
+  background: var(--lb-toggle-fill) !important;
+  color: var(--lb-toggle-label) !important;
+  box-shadow: var(--lb-shadow-1) !important;
+}
+
+#threadTree {
+  background: var(--lb-mail-list-background) !important;
+}
+
+tree-view:not(#threadTree) {
+  background: var(--lb-content) !important;
+}
+
+:is(#threadTree, #folderTree):focus {
+  outline: none !important;
+}
+
+#threadTree table,
+#threadTree tbody,
+[is="tree-view-table-body"] {
+  background: transparent !important;
+}
+
+/* The virtualized body can paint behind the sticky table section. Thunderbird
+ * only backgrounds the individual header cells, leaving a narrow unpainted
+ * strip above them at some scroll offsets. Back the whole sticky section and
+ * extend that paint upward without changing its measured height. */
+#threadTree thead[is="tree-view-table-header"] {
+  background-color: var(--layout-background-1, var(--lb-mail-list-background)) !important;
+  box-shadow: 0 -6px 0 var(--layout-background-1, var(--lb-mail-list-background)) !important;
+}
+
+/* Thunderbird's virtualized message list requires its embedded row controls
+ * to keep intrinsic dimensions. A global control minimum changes the measured
+ * row bounds when selection moves and makes the list compensate by scrolling. */
+#threadTree tbody :is(button, .button) {
+  min-width: auto !important;
+  min-height: auto !important;
+  min-inline-size: auto !important;
+  min-block-size: auto !important;
+  transform: none !important;
+}
+
+#threadTree tr {
+  border-color: var(--lb-separator) !important;
+}
+
+#threadTree tr:hover:not(.selected) {
+  background: var(--lb-hover) !important;
+}
+
+[is="tree-view-table-body"] tr.selected.current {
+  background: var(--lb-selection-inactive) !important;
+}
+
+#threadTree:focus-within [is="tree-view-table-body"] tr.selected.current {
+  background: var(--lb-accent) !important;
+  color: var(--lb-accent-text) !important;
+}
+
+#threadTree .card-layout .card-container {
+  min-height: calc(var(--lb-control-height) + 24px) !important;
+  margin: 3px 7px !important;
+  padding: 7px 10px !important;
+  border: 1px solid transparent !important;
+  border-radius: var(--lb-radius-rectangle) !important;
+  background: transparent !important;
+  transition: background-color 120ms ease, transform 90ms ease-out !important;
+}
+
+#threadTree .card-layout:hover .card-container {
+  background: var(--lb-hover) !important;
+}
+
+#threadTree .card-layout.selected.current .card-container {
+  border-color: var(--lb-control-border) !important;
+  background: var(--lb-selection-inactive) !important;
+  box-shadow: inset 0 1px var(--lb-control-highlight) !important;
+}
+
+#threadTree:not(:focus, :focus-within) .card-layout.selected.current .card-container {
+  border-color: var(--lb-control-border) !important;
+  background: var(--lb-selection-inactive) !important;
+  box-shadow: inset 0 1px var(--lb-control-highlight) !important;
+}
+
+#threadTree:focus-within .card-layout.selected.current .card-container {
+  border-color: transparent !important;
+  background: var(--lb-accent) !important;
+  color: var(--lb-accent-text) !important;
+  box-shadow: none !important;
+}
+
+#threadTree:focus-within .card-layout.selected.current :is(.sender, .subject, .snippet, .date, time) {
+  color: var(--lb-accent-text) !important;
+}
+
+#threadTree .sender {
+  margin: 0 !important;
+  color: var(--lb-label) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0 !important;
+}
+
+#threadTree .unread .sender,
+#threadTree tr[data-properties~="unread"] .sender {
+  font-weight: 700 !important;
+}
+
+.thread-card-subject-container,
+#threadTree .subject {
+  color: var(--lb-secondary-label) !important;
+  font-size: 12px !important;
+  line-height: 1.3 !important;
+}
+
+#threadTree .snippet {
+  color: var(--lb-tertiary-label) !important;
+  font-size: 11px !important;
+  line-height: 1.35 !important;
+}
+
+#threadTree time,
+#threadTree .date {
+  color: var(--lb-tertiary-label) !important;
+  font-size: 11px !important;
+  font-variant-numeric: tabular-nums !important;
+}
+
+#threadTree[rows="thread-card"] .card-layout td .card-container .read-status {
+  width: 7px !important;
+  height: 7px !important;
+  border: 0 !important;
+  border-radius: 50% !important;
+  background: var(--lb-accent) !important;
+  fill: transparent !important;
+  stroke: transparent !important;
+}
+
+#threadTree button :is(.replies-icon, .thread-replies) {
+  display: none !important;
+}
+
+#threadTree :is(.state, .attachment-icon, .tree-button-more, .thread-card-button) {
+  color: var(--lb-icon-secondary) !important;
+  fill: currentColor !important;
+  stroke: currentColor !important;
+}
+
+#threadTree :is(.button-star, .tree-button-flag)[checked="true"],
+#threadTree :is(.button-star, .tree-button-flag).flagged {
+  color: var(--lb-warning) !important;
+  fill: currentColor !important;
+  stroke: currentColor !important;
+}
+
+#threadTree :is(.button-spam, .tree-button-spam):hover {
+  color: var(--lb-warning) !important;
+}
+
+#threadTree :is(.tree-button-delete, .tree-button-request-delete):hover {
+  color: var(--lb-critical) !important;
+}
+
+#threadTree tree-view[data-show-grouped-by-sort="true"] .card-layout.children {
+  min-height: 30px !important;
+}
+
+#placeholderNoMessages::before {
+  background-image: none !important;
+  background-color: var(--lb-icon-tertiary) !important;
+  mask: url("Icons/mail.svg") center / contain no-repeat !important;
+  opacity: 0.72 !important;
+}
+
+.list-header-title,
+.sort-header-details {
+  color: var(--lb-secondary-label) !important;
+  font-size: 0.8rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.01em !important;
+}
+
+/* ========================================================================== */
+/* Reading pane and message actions                                           */
+/* ========================================================================== */
+
+#messagePaneBox,
+#messagepaneboxwrapper,
+#messageBrowser,
+#messagepane {
+  background: var(--lb-surface-solid) !important;
+}
+
+#messageHeader {
+  padding: 12px 14px 10px !important;
+  border: 0 !important;
+  background: var(--lb-surface-solid) !important;
+  box-shadow: var(--lb-scroll-edge) !important;
+}
+
+#expandedHeaderView,
+#messageHeaderView {
+  background: transparent !important;
+}
+
+#expandedsubjectBox,
+#expandedsubjectLabel {
+  color: var(--lb-label) !important;
+  font-size: 17px !important;
+  line-height: 1.22 !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.018em !important;
+}
+
+/* Keep the subject typographically stable when an emoji fallback font is used. */
+#expandedsubjectRow {
+  min-inline-size: 0 !important;
+}
+
+#expandedsubjectBox {
+  display: block !important;
+  flex: 1 1 0 !important;
+  min-inline-size: 0 !important;
+  overflow: hidden !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
+  -webkit-line-clamp: unset !important;
+}
+
+.message-header-label,
+#toHeading,
+#ccHeading,
+#reply-toHeading {
+  align-self: center !important;
+  color: var(--lb-tertiary-label) !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+}
+
+.recipient-avatar {
+  width: var(--recipient-avatar-size, 36px) !important;
+  height: var(--recipient-avatar-size, 36px) !important;
+  border: 1px solid var(--lb-separator) !important;
+  border-radius: 50% !important;
+  background: var(--lb-selection-strong) !important;
+  color: var(--lb-accent) !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+}
+
+.recipient-multi-line-name {
+  color: var(--lb-label) !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+}
+
+.recipient-address-book-button {
+  width: 16px !important;
+  height: 16px !important;
+  background: var(--lb-icon-secondary) !important;
+  mask: url("Icons/user-round-plus.svg") center / contain no-repeat !important;
+}
+
+.recipient-address-book-button:hover {
+  background: var(--lb-icon-selected) !important;
+}
+
+.recipient-address-book-button img {
+  display: none !important;
+}
+
+#messageHeader .toolbarbutton-1,
+.message-header-view-button,
+#messageHeader toolbarbutton {
+  min-height: var(--lb-control-height) !important;
+  padding: 0 9px !important;
+  border: 0 !important;
+  border-radius: var(--lb-radius-pill) !important;
+  background: transparent !important;
+  color: var(--lb-icon-primary) !important;
+  box-shadow: none !important;
+  transition: background-color 120ms ease, transform 90ms ease-out, box-shadow 120ms ease !important;
+}
+
+#messageHeader #header-view-toolbox {
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+#messageHeader #header-view-toolbar {
+  --lb-message-action-hover: light-dark(rgb(0 0 0 / 0.08), rgb(255 255 255 / 0.14));
+  --lb-message-action-pressed: light-dark(rgb(0 0 0 / 0.14), rgb(255 255 255 / 0.22));
+  display: flex !important;
+  align-items: center !important;
+  flex-wrap: nowrap !important;
+  gap: 0 !important;
+  padding: 2px !important;
+  border: 1px solid var(--lb-control-border) !important;
+  border-radius: var(--lb-radius-pill) !important;
+  background: var(--lb-control-fill) !important;
+  box-shadow: var(--lb-shadow-1) !important;
+}
+
+#starMessageButton {
+  display: grid !important;
+  place-items: center !important;
+  box-sizing: border-box !important;
+  width: var(--lb-control-height) !important;
+  min-width: var(--lb-control-height) !important;
+  height: var(--lb-control-height) !important;
+  min-height: var(--lb-control-height) !important;
+  margin: 0 2px !important;
+  padding: 0 !important;
+  border-radius: var(--lb-radius-circle) !important;
+  align-self: center !important;
+}
+
+#starMessageButton:hover {
+  background: var(--lb-message-action-hover) !important;
+}
+
+#starMessageButton > img {
+  display: block !important;
+  width: 16px !important;
+  height: 16px !important;
+  margin: 0 !important;
+}
+
+#messageHeader .toolbarbutton-1:hover,
+.message-header-view-button:hover,
+#messageHeader toolbarbutton:hover {
+  background: var(--lb-message-action-hover) !important;
+}
+
+#messageHeader .toolbarbutton-1:active,
+.message-header-view-button:active,
+#messageHeader toolbarbutton:active {
+  transform: scale(0.96) !important;
+  background: var(--lb-message-action-pressed) !important;
+  box-shadow: none !important;
+}
+
+#messageHeader .toolbarbutton-icon {
+  box-sizing: border-box !important;
+  width: 16px !important;
+  height: 16px !important;
+  margin: 0 5px 0 0 !important;
+  list-style-image: none !important;
+  background: currentColor !important;
+  mask-repeat: no-repeat !important;
+  mask-position: center !important;
+  mask-size: contain !important;
+}
+
+/* Icon-only toolbar actions are circles; icon + text actions stay capsules. */
+#messageHeader.message-header-buttons-only-icons :is(.toolbarbutton-1, .message-header-view-button, toolbarbutton) {
+  box-sizing: border-box !important;
+  width: var(--lb-control-height) !important;
+  min-width: var(--lb-control-height) !important;
+  height: var(--lb-control-height) !important;
+  padding: 0 !important;
+  border-radius: var(--lb-radius-circle) !important;
+}
+
+#messageHeader.message-header-buttons-only-icons .toolbarbutton-icon {
+  margin: 0 !important;
+}
+
+#messageHeader.message-header-buttons-only-icons :is(#hdrReplyAllButton, #hdrReplyListButton) {
+  width: calc(var(--lb-control-height) + 18px) !important;
+  min-width: calc(var(--lb-control-height) + 18px) !important;
+}
+
+#messageHeader.message-header-buttons-only-icons
+  :is(#hdrReplyAllButton, #hdrReplyListButton) .toolbarbutton-menubutton-button {
+  box-sizing: border-box !important;
+  width: var(--lb-control-height) !important;
+  min-width: var(--lb-control-height) !important;
+  padding: 0 !important;
+}
+
+#messageHeader.message-header-buttons-only-icons
+  :is(#hdrReplyAllButton, #hdrReplyListButton) .toolbarbutton-menubutton-dropmarker {
+  width: 18px !important;
+  min-width: 18px !important;
+  padding: 0 5px 0 1px !important;
+}
+
+#hdrReplyButton .toolbarbutton-icon,
+#hdrReplyToSenderButton .toolbarbutton-icon { mask-image: url("Icons/reply.svg") !important; }
+#hdrReplyAllButton .toolbarbutton-menubutton-button .toolbarbutton-icon { mask-image: url("Icons/reply-all.svg") !important; }
+#hdrReplyListButton .toolbarbutton-menubutton-button .toolbarbutton-icon { mask-image: url("Icons/messages-square.svg") !important; }
+#hdrForwardButton .toolbarbutton-icon { mask-image: url("Icons/forward.svg") !important; }
+#hdrArchiveButton .toolbarbutton-icon { mask-image: url("Icons/archive.svg") !important; }
+#hdrJunkButton .toolbarbutton-icon { mask-image: url("Icons/shield-alert.svg") !important; }
+#hdrTrashButton .toolbarbutton-icon { mask-image: url("Icons/trash-2.svg") !important; }
+
+#hdrJunkButton:hover { color: var(--lb-icon-warning) !important; }
+#hdrTrashButton:hover { color: var(--lb-icon-destructive) !important; }
+
+#otherActionsButton {
+  position: relative !important;
+}
+
+#otherActionsButton .toolbarbutton-icon {
+  display: none !important;
+}
+
+#otherActionsButton::before {
+  content: "" !important;
+  width: 16px !important;
+  height: 16px !important;
+  margin-inline-end: 5px !important;
+  background: currentColor !important;
+  mask: url("Icons/ellipsis.svg") center / contain no-repeat !important;
+}
+
+#messageHeader.message-header-buttons-only-icons #otherActionsButton::before {
+  margin-inline-end: 0 !important;
+}
+
+.infobar,
+.notificationbox-stack notification-message,
+notification-message {
+  margin: 8px 10px !important;
+  border: 1px solid var(--lb-separator) !important;
+  border-radius: var(--lb-radius-rectangle) !important;
+  background: var(--lb-content-elevated) !important;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.06) !important;
+}
+
+.infobar[value="maybeScam"],
+notification-message[type="warning"] {
+  border-color: color-mix(in srgb, var(--lb-warning) 42%, var(--lb-separator)) !important;
+}
+
+/* ========================================================================== */
+/* Search                                                                     */
+/* ========================================================================== */
+
+global-search-bar {
+  max-width: 520px !important;
+  padding: 4px !important;
+}
+
+/* SearchBar is a shadow-DOM component. Define its visual language through the
+ * inherited component variables and never draw a second surface on the host. */
+:is(search-bar, global-search-bar) {
+  --button-border-radius: var(--lb-radius-pill) !important;
+  --search-bar-color: var(--lb-label) !important;
+  --search-bar-border-color: var(--lb-separator) !important;
+  --search-bar-background: var(--lb-control-fill) !important;
+  --search-bar-focus-background: var(--lb-control-fill-hover) !important;
+  --focus-outline-color: var(--lb-focus-ring) !important;
+  --search-outline-offset: -1px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+global-search-bar input,
+input#searchInput,
+.search-input,
+input[type="search"] {
+  appearance: none !important;
+  box-sizing: border-box !important;
+  min-height: var(--lb-search-control-height, 28px) !important;
+  padding-inline: 12px 30px !important;
+  border: 1px solid var(--lb-separator) !important;
+  border-radius: var(--lb-radius-pill) !important;
+  background: var(--lb-control-fill) !important;
+  color: var(--lb-label) !important;
+  box-shadow: var(
+    --lb-search-box-shadow,
+    inset 0 1px 1px rgb(0 0 0 / 0.05), 0 1px rgb(255 255 255 / 0.12)
+  ) !important;
+}
+
+global-search-bar input:focus,
+input#searchInput:focus,
+.search-input:focus,
+input[type="search"]:focus {
+  border-color: var(--lb-accent) !important;
+  outline: 2px solid var(--lb-focus-ring) !important;
+  outline-offset: -1px !important;
+}
+
+:is(input, search-textbox)::placeholder {
+  color: var(--lb-tertiary-label) !important;
+  opacity: 1 !important;
+}
+
+.search-button-icon {
+  margin-inline-end: 5px !important;
+  color: var(--lb-icon-secondary) !important;
+  fill: currentColor !important;
+  stroke: currentColor !important;
+}
+
+/* ========================================================================== */
+/* Address book, calendar, tasks, and chat                                     */
+/* ========================================================================== */
+
+#booksPane,
+#directoryPane,
+#calendarSidebar,
+#calendar-task-box,
+#today-pane-panel,
+#chatPanel .conv-list,
+#chat-toobar {
+  border-color: var(--lb-separator) !important;
+  background: var(--lb-sidebar-fallback) !important;
+}
+
+@media (-moz-platform: macos) {
+  :is(#booksPane, #directoryPane, #calendarSidebar, #calendar-task-box, #today-pane-panel, #chatPanel .conv-list) {
+    appearance: -moz-sidebar !important;
+    background: transparent !important;
+  }
+}
+
+#cardsPane,
+#addressBookDetailsPane,
+#calendarDisplayDeck,
+#calendar-view-box,
+#task-tree,
+#chatPanel,
+#conversationsDeck {
+  background: var(--lb-content) !important;
+}
+
+#booksPaneCreateList {
+  background-image: none !important;
+  color: var(--lb-icon-secondary) !important;
+}
+
+#booksPaneCreateList:hover {
+  background: var(--lb-control-fill-hover) !important;
+  color: var(--lb-icon-primary) !important;
+}
+
+#booksPaneCreateList::before {
+  content: "" !important;
+  display: block !important;
+  width: 16px !important;
+  height: 16px !important;
+  margin: auto !important;
+  background: currentColor !important;
+  mask: url("Icons/book-user.svg") center / contain no-repeat !important;
+}
+
+.bookRow-icon {
+  content: none !important;
+  background-image: none !important;
+  background-color: currentColor !important;
+  color: var(--lb-icon-secondary) !important;
+  mask: url("Icons/notebook-tabs.svg") center / contain no-repeat !important;
+}
+
+:is(.bookRow.selected, tr.selected) .bookRow-icon {
+  color: var(--lb-icon-selected) !important;
+}
+
+#cards[rows="ab-card-row"] {
+  border-top: 0 !important;
+}
+
+#cards tr,
+#task-tree tr,
+.calendar-event-box-container,
+.conversation-list-item {
+  border-radius: var(--lb-radius-small) !important;
+}
+
+#cards tr:hover,
+#task-tree tr:hover,
+.conversation-list-item:hover {
+  background: var(--lb-hover) !important;
+}
+
+#cards tr.selected,
+#task-tree tr.selected,
+.conversation-list-item[selected="true"] {
+  background: var(--lb-selection-inactive) !important;
+}
+
+:is(#cards, #task-tree, .conv-list):focus-within :is(tr.selected, .conversation-list-item[selected="true"]) {
+  background: var(--lb-accent) !important;
+  color: var(--lb-accent-text) !important;
+}
+
+calendar-month-day-box-item,
+.calendar-event-box-container,
+.calendar-task-treechildren::-moz-tree-row(selected) {
+  border-radius: var(--lb-radius-small) !important;
+}
+
+:is(#calendar-view-box, #chatPanel, #cardsPane) :is(.toolbar, .list-header-bar, .sidebar-header),
+#today-pane-panel > .sidebar-header {
+  border: 0 !important;
+  background: var(--lb-surface) !important;
+  box-shadow: var(--lb-scroll-edge) !important;
+  backdrop-filter: blur(24px) saturate(150%) !important;
+}
+
+/* Today Pane -------------------------------------------------------------- */
+
+#today-pane-panel {
+  color: var(--lb-label) !important;
+}
+
+#today-pane-panel > vbox,
+#agenda-panel,
+#agenda-container,
+#todo-tab-panel {
+  border: 0 !important;
+  background: transparent !important;
+  color: var(--lb-label) !important;
+}
+
+#today-pane-panel > .sidebar-header {
+  box-sizing: border-box !important;
+  min-height: var(--lb-pane-header-height) !important;
+  height: var(--lb-pane-header-height) !important;
+  padding: var(--lb-pane-header-padding-block) 7px var(--lb-pane-header-padding-block) 10px !important;
+}
+
+#today-pane-header {
+  margin: 0 !important;
+  color: var(--lb-label) !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.006em !important;
+}
+
+#buttonspacer {
+  width: 4px !important;
+}
+
+.today-pane-cycler,
+#today-closer {
+  appearance: none !important;
+  box-sizing: border-box !important;
+  width: 26px !important;
+  min-width: 26px !important;
+  height: 26px !important;
+  min-height: 26px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: var(--lb-radius-circle) !important;
+  background: transparent !important;
+  color: var(--lb-icon-secondary) !important;
+  box-shadow: none !important;
+}
+
+.today-pane-cycler:hover,
+#today-closer:hover {
+  background: var(--lb-control-fill-hover) !important;
+  color: var(--lb-icon-primary) !important;
+}
+
+.today-pane-cycler:active,
+#today-closer:active {
+  background: var(--lb-control-fill-pressed) !important;
+  transform: scale(0.94) !important;
+}
+
+.today-pane-cycler > .toolbarbutton-icon,
+#today-closer > .toolbarbutton-icon {
+  width: 14px !important;
+  height: 14px !important;
+  margin: 0 !important;
+}
+
+#mini-day-box,
+#today-minimonth-box {
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+}
+
+#mini-day-image {
+  box-sizing: border-box !important;
+  min-height: 66px !important;
+  padding: 8px 7px 7px 9px !important;
+  border: 0 !important;
+  background: color-mix(in srgb, var(--lb-control-fill) 52%, transparent) !important;
+}
+
+#dateContainer {
+  min-width: 48px !important;
+  margin-inline-end: 6px !important;
+}
+
+#datevalue-label {
+  width: auto !important;
+  min-width: 44px !important;
+  margin: 0 !important;
+  color: var(--lb-label) !important;
+  font-family: inherit !important;
+  font-size: 32px !important;
+  line-height: 1 !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.045em !important;
+  font-variant-numeric: tabular-nums !important;
+}
+
+#weekdayNameLabel {
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  color: var(--lb-label) !important;
+  font-family: inherit !important;
+  font-size: 15px !important;
+  line-height: 1.2 !important;
+  font-weight: 650 !important;
+  letter-spacing: -0.012em !important;
+}
+
+#monthNameContainer,
+#currentWeek-label {
+  margin: 1px 0 0 !important;
+  padding: 0 !important;
+  color: var(--lb-secondary-label) !important;
+  font-size: 11px !important;
+  font-variant-numeric: tabular-nums !important;
+}
+
+#currentWeek-label {
+  margin-inline-start: 5px !important;
+}
+
+#weekdayNameLabel + hbox {
+  padding: 1px !important;
+  border: 1px solid var(--lb-control-border) !important;
+  border-radius: var(--lb-radius-pill) !important;
+  background: var(--lb-control-fill) !important;
+  box-shadow: inset 0 1px var(--lb-control-highlight) !important;
+}
+
+.miniday-nav-buttons,
+#miniday-dropdown-button {
+  appearance: none !important;
+  box-sizing: border-box !important;
+  width: 22px !important;
+  min-width: 22px !important;
+  height: 22px !important;
+  min-height: 22px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: var(--lb-radius-circle) !important;
+  background-color: transparent !important;
+  color: var(--lb-icon-secondary) !important;
+  box-shadow: none !important;
+}
+
+.miniday-nav-buttons:not([disabled]):hover,
+#miniday-dropdown-button:not([disabled]):hover {
+  border: 0 !important;
+  background-color: var(--lb-control-fill-hover) !important;
+  color: var(--lb-icon-primary) !important;
+  box-shadow: none !important;
+}
+
+.miniday-nav-buttons:not([disabled]):active,
+#miniday-dropdown-button:not([disabled]):active {
+  background-color: var(--lb-control-fill-pressed) !important;
+  transform: scale(0.92) !important;
+}
+
+.miniday-nav-buttons > .toolbarbutton-icon {
+  width: 12px !important;
+  height: 12px !important;
+  margin: 0 !important;
+}
+
+#miniday-dropdown-button {
+  align-self: center !important;
+  margin-inline-start: 4px !important;
+  border: 1px solid var(--lb-control-border) !important;
+  background-color: var(--lb-control-fill) !important;
+  box-shadow: inset 0 1px var(--lb-control-highlight) !important;
+}
+
+#agenda-toolbar {
+  box-sizing: border-box !important;
+  min-height: 40px !important;
+  padding: 6px 8px !important;
+  border: 0 !important;
+  background: transparent !important;
+}
+
+#todaypane-new-event-button {
+  appearance: none !important;
+  box-sizing: border-box !important;
+  min-height: 28px !important;
+  margin: 0 !important;
+  padding: 0 11px !important;
+  border: 0 !important;
+  border-radius: var(--lb-radius-pill) !important;
+  background: var(--lb-accent) !important;
+  color: var(--lb-accent-text) !important;
+  box-shadow: var(--lb-shadow-1) !important;
+  font-weight: 600 !important;
+}
+
+#todaypane-new-event-button:not([disabled]):hover {
+  border: 0 !important;
+  background: color-mix(in srgb, var(--lb-accent) 86%, CanvasText) !important;
+  color: var(--lb-accent-text) !important;
+  box-shadow: var(--lb-shadow-1) !important;
+}
+
+#todaypane-new-event-button:not([disabled]):active {
+  background: color-mix(in srgb, var(--lb-accent) 72%, CanvasText) !important;
+  transform: scale(0.97) !important;
+}
+
+#todaypane-new-event-button > .toolbarbutton-icon {
+  width: 14px !important;
+  height: 14px !important;
+  margin: 0 5px 0 0 !important;
+}
+
+#todaypane-new-event-button > .toolbarbutton-text {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+#agenda {
+  margin: 0 !important;
+  padding: 2px 6px 10px !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: var(--lb-label) !important;
+  --selected-background: var(--lb-accent) !important;
+  --selected-foreground: var(--lb-accent-text) !important;
+}
+
+.agenda-date-header {
+  box-sizing: border-box !important;
+  min-height: 22px !important;
+  margin: 9px 2px 2px !important;
+  padding: 4px 5px 2px !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: var(--lb-secondary-label) !important;
+  font-size: 11px !important;
+  line-height: 1.2 !important;
+  font-weight: 650 !important;
+  letter-spacing: 0.006em !important;
+}
+
+.agenda-listitem:first-child .agenda-date-header {
+  margin-block-start: 1px !important;
+}
+
+.agenda-listitem-details {
+  box-sizing: border-box !important;
+  min-height: 28px !important;
+  padding: 5px 6px !important;
+  border: 0 !important;
+  border-radius: var(--lb-radius-field) !important;
+  background: transparent !important;
+  color: var(--lb-label) !important;
+  transition: background-color 120ms ease, color 120ms ease, transform 90ms ease-out !important;
+}
+
+.agenda-listitem:not(.agenda-listitem-all-day) .agenda-listitem-details:hover {
+  background: var(--lb-hover) !important;
+}
+
+.agenda-listitem:not(.agenda-listitem-all-day) .agenda-listitem-details:active {
+  background: var(--lb-pressed) !important;
+  transform: scale(0.985) !important;
+}
+
+.agenda-listitem-all-day .agenda-listitem-details {
+  margin: 2px 1px !important;
+  padding: 4px 7px !important;
+  border-radius: var(--lb-radius-small) !important;
+  box-shadow: inset 0 1px rgb(255 255 255 / 0.18) !important;
+}
+
+.agenda-listitem-all-day .agenda-listitem-details:hover {
+  filter: brightness(1.06) saturate(1.04) !important;
+}
+
+#agenda:not(:focus) .agenda-listitem.selected:not(.agenda-listitem-all-day) .agenda-listitem-details {
+  background: var(--lb-selection-inactive) !important;
+  color: var(--lb-label) !important;
+  opacity: 1 !important;
+}
+
+#agenda:not(:focus) .agenda-listitem-all-day.selected .agenda-listitem-details {
+  background: var(--item-backcolor) !important;
+  color: var(--item-forecolor) !important;
+  box-shadow:
+    inset 0 1px rgb(255 255 255 / 0.18),
+    0 0 0 2px var(--lb-selection-inactive) !important;
+  opacity: 1 !important;
+}
+
+#agenda:focus .agenda-listitem.selected .agenda-listitem-details {
+  background: var(--lb-accent) !important;
+  color: var(--lb-accent-text) !important;
+  opacity: 1 !important;
+}
+
+.agenda-listitem-calendar {
+  box-sizing: border-box !important;
+  width: 8px !important;
+  height: 8px !important;
+  margin-inline-end: 7px !important;
+  border: 1px solid rgb(255 255 255 / 0.24) !important;
+  border-radius: var(--lb-radius-circle) !important;
+  box-shadow: 0 0 0 0.5px rgb(0 0 0 / 0.12) !important;
+}
+
+.agenda-listitem-details-inner {
+  min-width: 0 !important;
+  color: inherit !important;
+  font-size: 12px !important;
+  line-height: 1.28 !important;
+}
+
+.agenda-listitem-time {
+  margin-inline-end: 4px !important;
+  font-weight: 650 !important;
+  font-variant-numeric: tabular-nums !important;
+}
+
+.agenda-listitem-title {
+  color: inherit !important;
+}
+
+.agenda-listitem-relative {
+  margin-inline-start: 4px !important;
+  color: var(--lb-tertiary-label) !important;
+  font-size: 10px !important;
+}
+
+#agenda:focus .agenda-listitem.selected .agenda-listitem-relative {
+  color: color-mix(in srgb, var(--lb-accent-text) 78%, transparent) !important;
+}
+
+.agenda-listitem-now .agenda-listitem-relative {
+  padding: 1px 5px !important;
+  border-radius: var(--lb-radius-pill) !important;
+  background: var(--lb-accent) !important;
+  color: var(--lb-accent-text) !important;
+  font-weight: 600 !important;
+}
+
+.agenda-listitem-overlap {
+  width: 13px !important;
+  height: 13px !important;
+  margin-inline-start: 5px !important;
+  color: var(--lb-icon-secondary) !important;
+}
+
+#show-completed-checkbox-box {
+  box-sizing: border-box !important;
+  min-height: 36px !important;
+  padding: 5px 8px !important;
+  border: 0 !important;
+  background: var(--lb-surface) !important;
+  box-shadow: var(--lb-scroll-edge) !important;
+}
+
+#unifinder-todo-tree {
+  border: 0 !important;
+  background: transparent !important;
+}
+
+#today-pane-splitter {
+  min-height: 7px !important;
+  height: 7px !important;
+  margin-block-start: -7px !important;
+  border: 0 !important;
+  background: linear-gradient(
+    transparent 3px,
+    var(--lb-separator) 3px,
+    var(--lb-separator) 4px,
+    transparent 4px
+  ) !important;
+}
+
+#today-pane-splitter:hover {
+  background: linear-gradient(
+    transparent 3px,
+    color-mix(in srgb, var(--lb-accent) 65%, transparent) 3px,
+    color-mix(in srgb, var(--lb-accent) 65%, transparent) 4px,
+    transparent 4px
+  ) !important;
+}
+
+/* ========================================================================== */
+/* Composer, account settings, dialogs, and secondary windows                  */
+/* ========================================================================== */
+
+#msgcomposeWindow,
+#compose-toolbox,
+#composeToolbar2,
+#headers-box,
+#composeContentBox,
+#attachmentArea,
+#attachmentBucket,
+#status-bar,
+#mailContext,
+#calendarContext {
+  border-color: var(--lb-separator) !important;
+}
+
+#msgcomposeWindow,
+#composeContentBox {
+  background: var(--lb-content) !important;
+}
+
+#compose-toolbox {
+  background: var(--lb-surface) !important;
+  box-shadow: var(--lb-scroll-edge) !important;
+  backdrop-filter: blur(24px) saturate(150%) !important;
+}
+
+#composeToolbar2 {
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+/* Thunderbird 154 moved the compose header out of the old #headers-box.
+ * Style the live header containers so each field owns exactly one outline. */
+#MsgHeadersToolbar,
+#headers-box {
+  padding: 5px 8px 7px !important;
+  border: 0 !important;
+  background: var(--lb-surface-solid) !important;
+  color: var(--lb-label) !important;
+  box-shadow: var(--lb-scroll-edge) !important;
+}
+
+#top-gradient-box.address-identity-recipient {
+  min-block-size: 30px !important;
+  align-items: center !important;
+}
+
+#MsgHeadersToolbar :is(#identityLabel-box, .address-label-container),
+#MsgHeadersToolbar #subjectLabel-box {
+  padding-block-start: 0 !important;
+  align-items: center !important;
+  color: var(--lb-secondary-label) !important;
+}
+
+#MsgHeadersToolbar :is(#identityLabel, .address-label-container label, #subjectLabel) {
+  margin-block: 0 !important;
+  color: var(--lb-secondary-label) !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+}
+
+#msgIdentity {
+  box-sizing: border-box !important;
+  block-size: 30px !important;
+  min-block-size: 30px !important;
+  margin: 0 8px 0 4px !important;
+  padding-block: 0 !important;
+  border: 1px solid var(--lb-control-border) !important;
+  border-radius: var(--lb-radius-field) !important;
+  background: var(--lb-control-fill) !important;
+  color: var(--lb-label) !important;
+  box-shadow: inset 0 1px var(--lb-control-highlight) !important;
+}
+
+#msgIdentity:hover {
+  border-color: var(--lb-strong-separator) !important;
+  background: var(--lb-control-fill-hover) !important;
+}
+
+#msgIdentity:where(:focus, :focus-within, [focused="true"]) {
+  border-color: var(--lb-accent) !important;
+  outline: 0 !important;
+  background: var(--lb-content-elevated) !important;
+  box-shadow: 0 0 0 2px var(--lb-focus-ring) !important;
+}
+
+#msgIdentity::part(text-input) {
+  padding-inline: 7px 3px !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+#extraAddressRowsArea {
+  gap: 2px !important;
+  margin-inline-end: 4px !important;
+}
+
+#extraAddressRowsArea::before {
+  border-color: var(--lb-separator) !important;
+}
+
+#extraAddressRowsArea > :is(.recipient-button, #extraAddressRowsMenuButton) {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  min-inline-size: 24px !important;
+  min-block-size: 24px !important;
+  block-size: 24px !important;
+  padding: 0 7px !important;
+  border: 0 !important;
+  border-radius: var(--lb-radius-pill) !important;
+  background: transparent !important;
+  color: var(--lb-secondary-label) !important;
+  font: inherit !important;
+  line-height: 1 !important;
+  text-align: center !important;
+  box-shadow: none !important;
+}
+
+/* The flex centering above must not override Thunderbird's contextual
+ * visibility. To/Newsgroup/Followup-To stay in the More menu when hidden. */
+#extraAddressRowsArea > :is(.recipient-button, #extraAddressRowsMenuButton)[hidden] {
+  display: none !important;
+}
+
+#extraAddressRowsArea > #extraAddressRowsMenuButton {
+  inline-size: 24px !important;
+  padding: 0 !important;
+}
+
+#extraAddressRowsArea > :is(.recipient-button, #extraAddressRowsMenuButton):hover {
+  background: var(--lb-control-fill-hover) !important;
+  color: var(--lb-label) !important;
+}
+
+#extraAddressRowsArea > #extraAddressRowsMenuButton[aria-expanded="true"] {
+  background: var(--lb-control-fill-pressed) !important;
+  color: var(--lb-label) !important;
+  box-shadow: inset 0 0 0 1px var(--lb-control-border) !important;
+}
+
+#extraAddressRowsMenuButton .overflow-icon {
+  content: none !important;
+  display: block !important;
+  inline-size: 15px !important;
+  block-size: 15px !important;
+  background: currentColor !important;
+  mask: url("Icons/ellipsis.svg") center / contain no-repeat !important;
+}
+
+#recipientsContainer {
+  padding: 0 !important;
+}
+
+#MsgHeadersToolbar .address-row {
+  margin-block: 4px !important;
+  margin-inline-end: 0 !important;
+  align-items: center !important;
+}
+
+#MsgHeadersToolbar .address-container,
+#msgSubject {
+  box-sizing: border-box !important;
+  min-block-size: 30px !important;
+  border: 1px solid var(--lb-control-border) !important;
+  border-radius: var(--lb-radius-field) !important;
+  background: var(--lb-control-fill) !important;
+  color: var(--lb-label) !important;
+  box-shadow: inset 0 1px var(--lb-control-highlight) !important;
+}
+
+#MsgHeadersToolbar .address-container {
+  margin-inline: 4px 8px !important;
+  padding: 0 3px !important;
+}
+
+#MsgHeadersToolbar .address-container > .address-input {
+  box-sizing: border-box !important;
+  min-block-size: 28px !important;
+  padding: 3px 6px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  outline: 0 !important;
+  background: transparent !important;
+  color: inherit !important;
+  box-shadow: none !important;
+}
+
+#MsgHeadersToolbar .address-container[focused="true"],
+#msgSubject:focus {
+  border-color: var(--lb-accent) !important;
+  outline: 0 !important;
+  background: var(--lb-content-elevated) !important;
+  box-shadow: 0 0 0 2px var(--lb-focus-ring) !important;
+}
+
+#MsgHeadersToolbar .address-pill {
+  min-block-size: 22px !important;
+  margin-block: 3px !important;
+  padding-inline: 8px !important;
+  border-radius: var(--lb-radius-pill) !important;
+  background: var(--lb-selection-inactive) !important;
+  color: var(--lb-label) !important;
+  box-shadow: none !important;
+}
+
+#MsgHeadersToolbar .address-pill:is(:hover, :focus):not(.editing) {
+  background: var(--lb-pressed) !important;
+  box-shadow: inset 0 0 0 1px var(--lb-control-border) !important;
+  text-shadow: none !important;
+}
+
+#MsgHeadersToolbar .address-pill[selected]:not(.editing) {
+  background: var(--lb-accent) !important;
+  color: var(--lb-accent-text) !important;
+  box-shadow: none !important;
+}
+
+#subject-box {
+  min-block-size: 34px !important;
+  align-items: center !important;
+}
+
+#msgSubjectContainer {
+  margin-inline: 4px 8px !important;
+}
+
+#msgSubjectContainer > moz-input-box {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+#msgSubject {
+  block-size: 30px !important;
+  min-block-size: 30px !important;
+  margin: 0 !important;
+  padding: 4px 8px !important;
+}
+
+#msgSubject.with-icon {
+  padding-inline-start: 30px !important;
+}
+
+#msgEncryptedSubjectIcon {
+  inset-block-start: 7px !important;
+  inset-inline-start: 8px !important;
+  color: var(--lb-icon-secondary) !important;
+}
+
+#attachmentBucket {
+  border-radius: var(--lb-radius-field) !important;
+  background: var(--lb-content-elevated) !important;
+}
+
+#composeToolbar2 {
+  min-block-size: 36px !important;
+  padding-inline: 8px !important;
+  padding-block-end: 5px !important;
+  gap: 2px !important;
+}
+
+#composeToolbar2 .toolbarbutton-1 {
+  box-sizing: border-box !important;
+  min-block-size: 30px !important;
+  block-size: 30px !important;
+  margin: 0 !important;
+  padding: 0 9px !important;
+  border: 1px solid transparent !important;
+  border-radius: var(--lb-radius-pill) !important;
+  background: transparent !important;
+  color: var(--lb-icon-primary) !important;
+  box-shadow: none !important;
+  fill: color-mix(in srgb, currentColor 20%, transparent) !important;
+  stroke: currentColor !important;
+}
+
+#composeToolbar2 .toolbarbutton-1 > .toolbarbutton-icon {
+  box-sizing: border-box !important;
+  inline-size: 18px !important;
+  block-size: 18px !important;
+  margin-inline-end: 4px !important;
+  padding: 1px !important;
+}
+
+#composeToolbar2 .toolbarbutton-1:hover {
+  border-color: var(--lb-control-border) !important;
+  background: var(--lb-control-fill-hover) !important;
+}
+
+#composeToolbar2 .toolbarbutton-1:is([checked], [aria-pressed="true"], [open="true"]) {
+  border-color: var(--lb-control-border) !important;
+  background: var(--lb-toggle-fill) !important;
+  color: var(--lb-toggle-label) !important;
+}
+
+#composeToolbar2 toolbarseparator {
+  min-inline-size: 1px !important;
+  inline-size: 1px !important;
+  min-block-size: 16px !important;
+  block-size: 16px !important;
+  margin-inline: 5px !important;
+  border: 0 !important;
+  background: var(--lb-separator) !important;
+}
+
+/* Thunderbird builds split controls from a toolbarbutton parent plus separate
+ * action and dropmarker children. Keep supported native controls in one
+ * continuous capsule and reserve the only internal edge for the options
+ * divider. The explicit list avoids changing extension-owned buttons. */
+:is(
+  #hdrReplyAllButton,
+  #hdrReplyListButton,
+  #hdrFollowupButton,
+  #imip-view-toolbar > .toolbarbutton-1,
+  #summary-toolbar > .toolbarbutton-1,
+  #composeToolbar2 .toolbarbutton-1,
+  #attachmentSaveAllSingle,
+  #attachmentSaveAllMultiple,
+  #task-actions-markcompleted,
+  #newButton,
+  #button-getmsg,
+  #button-goback,
+  #button-goforward,
+  #button-mark
+)[is="toolbarbutton-menu-button"] {
+  box-sizing: border-box !important;
+  overflow: clip !important;
+  padding: 0 !important;
+}
+
+:is(
+  #hdrReplyAllButton,
+  #hdrReplyListButton,
+  #hdrFollowupButton,
+  #imip-view-toolbar > .toolbarbutton-1,
+  #summary-toolbar > .toolbarbutton-1,
+  #composeToolbar2 .toolbarbutton-1,
+  #attachmentSaveAllSingle,
+  #attachmentSaveAllMultiple,
+  #task-actions-markcompleted,
+  #newButton,
+  #button-getmsg,
+  #button-goback,
+  #button-goforward,
+  #button-mark
+)[is="toolbarbutton-menu-button"] > :is(
+  .toolbarbutton-menubutton-button,
+  .toolbarbutton-menubutton-dropmarker
+) {
+  appearance: none !important;
+  box-sizing: border-box !important;
+  min-block-size: var(--lb-control-height) !important;
+  block-size: var(--lb-control-height) !important;
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background-color: transparent !important;
+  color: inherit !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+:is(
+  #hdrReplyAllButton,
+  #hdrReplyListButton,
+  #hdrFollowupButton,
+  #imip-view-toolbar > .toolbarbutton-1,
+  #summary-toolbar > .toolbarbutton-1,
+  #composeToolbar2 .toolbarbutton-1,
+  #attachmentSaveAllSingle,
+  #attachmentSaveAllMultiple,
+  #task-actions-markcompleted,
+  #newButton,
+  #button-getmsg,
+  #button-goback,
+  #button-goforward,
+  #button-mark
+)[is="toolbarbutton-menu-button"] > .toolbarbutton-menubutton-button {
+  min-inline-size: 0 !important;
+  padding: 0 7px 0 9px !important;
+}
+
+:is(
+  #hdrReplyAllButton,
+  #hdrReplyListButton,
+  #hdrFollowupButton,
+  #imip-view-toolbar > .toolbarbutton-1,
+  #summary-toolbar > .toolbarbutton-1,
+  #composeToolbar2 .toolbarbutton-1,
+  #attachmentSaveAllSingle,
+  #attachmentSaveAllMultiple,
+  #task-actions-markcompleted,
+  #newButton,
+  #button-getmsg,
+  #button-goback,
+  #button-goforward,
+  #button-mark
+)[is="toolbarbutton-menu-button"] > .toolbarbutton-menubutton-dropmarker {
+  display: grid !important;
+  place-items: center !important;
+  min-inline-size: 22px !important;
+  inline-size: 22px !important;
+  padding: 0 !important;
+  border-inline-start: 1px solid var(--lb-separator) !important;
+  background-image: var(--icon-nav-down-sm) !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-size: 12px !important;
+  color: var(--lb-icon-secondary) !important;
+  -moz-context-properties: fill, stroke !important;
+  fill: color-mix(in srgb, currentColor 20%, transparent) !important;
+  stroke: currentColor !important;
+}
+
+:is(
+  #hdrReplyAllButton,
+  #hdrReplyListButton,
+  #hdrFollowupButton,
+  #imip-view-toolbar > .toolbarbutton-1,
+  #summary-toolbar > .toolbarbutton-1,
+  #composeToolbar2 .toolbarbutton-1,
+  #attachmentSaveAllSingle,
+  #attachmentSaveAllMultiple,
+  #task-actions-markcompleted,
+  #newButton,
+  #button-getmsg,
+  #button-goback,
+  #button-goforward,
+  #button-mark
+)[is="toolbarbutton-menu-button"]
+  > .toolbarbutton-menubutton-dropmarker
+  > .toolbarbutton-icon {
+  display: none !important;
+}
+
+:is(
+  #hdrReplyAllButton,
+  #hdrReplyListButton,
+  #hdrFollowupButton,
+  #imip-view-toolbar > .toolbarbutton-1,
+  #summary-toolbar > .toolbarbutton-1,
+  #composeToolbar2 .toolbarbutton-1,
+  #attachmentSaveAllSingle,
+  #attachmentSaveAllMultiple,
+  #task-actions-markcompleted,
+  #newButton,
+  #button-getmsg,
+  #button-goback,
+  #button-goforward,
+  #button-mark
+)[is="toolbarbutton-menu-button"]:not([disabled])
+  > .toolbarbutton-menubutton-button:hover,
+:is(
+  #hdrReplyAllButton,
+  #hdrReplyListButton,
+  #hdrFollowupButton,
+  #imip-view-toolbar > .toolbarbutton-1,
+  #summary-toolbar > .toolbarbutton-1,
+  #composeToolbar2 .toolbarbutton-1,
+  #attachmentSaveAllSingle,
+  #attachmentSaveAllMultiple,
+  #task-actions-markcompleted,
+  #newButton,
+  #button-getmsg,
+  #button-goback,
+  #button-goforward,
+  #button-mark
+)[is="toolbarbutton-menu-button"]:not([disabled])[buttonover]
+  > .toolbarbutton-menubutton-button,
+:is(
+  #hdrReplyAllButton,
+  #hdrReplyListButton,
+  #hdrFollowupButton,
+  #imip-view-toolbar > .toolbarbutton-1,
+  #summary-toolbar > .toolbarbutton-1,
+  #composeToolbar2 .toolbarbutton-1,
+  #attachmentSaveAllSingle,
+  #attachmentSaveAllMultiple,
+  #task-actions-markcompleted,
+  #newButton,
+  #button-getmsg,
+  #button-goback,
+  #button-goforward,
+  #button-mark
+)[is="toolbarbutton-menu-button"]:not([disabled]):not([buttonover]):hover
+  > .toolbarbutton-menubutton-dropmarker {
+  background-color: var(--lb-control-fill-hover) !important;
+}
+
+:is(
+  #hdrReplyAllButton,
+  #hdrReplyListButton,
+  #hdrFollowupButton,
+  #imip-view-toolbar > .toolbarbutton-1,
+  #summary-toolbar > .toolbarbutton-1,
+  #composeToolbar2 .toolbarbutton-1,
+  #attachmentSaveAllSingle,
+  #attachmentSaveAllMultiple,
+  #task-actions-markcompleted,
+  #newButton,
+  #button-getmsg,
+  #button-goback,
+  #button-goforward,
+  #button-mark
+)[is="toolbarbutton-menu-button"]:not([disabled])
+  > .toolbarbutton-menubutton-button:hover:active,
+:is(
+  #hdrReplyAllButton,
+  #hdrReplyListButton,
+  #hdrFollowupButton,
+  #imip-view-toolbar > .toolbarbutton-1,
+  #summary-toolbar > .toolbarbutton-1,
+  #composeToolbar2 .toolbarbutton-1,
+  #attachmentSaveAllSingle,
+  #attachmentSaveAllMultiple,
+  #task-actions-markcompleted,
+  #newButton,
+  #button-getmsg,
+  #button-goback,
+  #button-goforward,
+  #button-mark
+)[is="toolbarbutton-menu-button"]:not([disabled])[open="true"]
+  > .toolbarbutton-menubutton-dropmarker {
+  background-color: var(--lb-control-fill-pressed) !important;
+}
+
+/* Invitation and summary responses are standalone controls, so their parent
+ * supplies the complete pill surface. */
+:is(
+  #imip-view-toolbar > .toolbarbutton-1,
+  #summary-toolbar > .toolbarbutton-1
+)[is="toolbarbutton-menu-button"] {
+  min-block-size: 0 !important;
+  block-size: var(--lb-control-height) !important;
+  border: 1px solid var(--lb-control-border) !important;
+  border-radius: var(--lb-radius-pill) !important;
+  background: var(--lb-control-fill) !important;
+  box-shadow: var(--lb-shadow-1) !important;
+}
+
+:is(
+  #imip-view-toolbar > .toolbarbutton-1,
+  #summary-toolbar > .toolbarbutton-1
+)[is="toolbarbutton-menu-button"] > :is(
+  .toolbarbutton-menubutton-button,
+  .toolbarbutton-menubutton-dropmarker
+) {
+  min-block-size: 0 !important;
+  block-size: 100% !important;
+}
+
+/* Message actions sit inside a larger shared capsule. Only their active
+ * segment receives feedback; the split control does not draw another pill. */
+#messageHeader :is(#hdrReplyAllButton, #hdrReplyListButton, #hdrFollowupButton) {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+#messageHeader
+  :is(#hdrReplyAllButton, #hdrReplyListButton, #hdrFollowupButton):not([disabled])
+  > .toolbarbutton-menubutton-button:hover,
+#messageHeader
+  :is(#hdrReplyAllButton, #hdrReplyListButton, #hdrFollowupButton):not([disabled])[buttonover]
+  > .toolbarbutton-menubutton-button,
+#messageHeader
+  :is(#hdrReplyAllButton, #hdrReplyListButton, #hdrFollowupButton):not([disabled]):not([buttonover]):hover
+  > .toolbarbutton-menubutton-dropmarker {
+  background-color: var(--lb-message-action-hover) !important;
+}
+
+#messageHeader
+  :is(#hdrReplyAllButton, #hdrReplyListButton, #hdrFollowupButton):not([disabled])
+  > .toolbarbutton-menubutton-button:hover:active,
+#messageHeader
+  :is(#hdrReplyAllButton, #hdrReplyListButton, #hdrFollowupButton):not([disabled])[open="true"]
+  > .toolbarbutton-menubutton-dropmarker {
+  background-color: var(--lb-message-action-pressed) !important;
+}
+
+/* Compose keeps its existing compact padding inside the shared geometry. */
+#composeToolbar2
+  .toolbarbutton-1[is="toolbarbutton-menu-button"]
+  > .toolbarbutton-menubutton-button
+  > .toolbarbutton-icon {
+  margin-inline-end: 4px !important;
+}
+
+#composeToolbar2
+  .toolbarbutton-1[is="toolbarbutton-menu-button"]
+  > :is(.toolbarbutton-menubutton-button, .toolbarbutton-menubutton-dropmarker):hover {
+  background-color: var(--lb-hover) !important;
+}
+
+#button-send:not([disabled]) {
+  border-color: color-mix(in srgb, var(--lb-accent) 82%, CanvasText) !important;
+  background: var(--lb-accent) !important;
+  color: var(--lb-accent-text) !important;
+  box-shadow: inset 0 1px rgb(255 255 255 / 0.2), var(--lb-shadow-1) !important;
+}
+
+#button-send:not([disabled]):hover {
+  background: color-mix(in srgb, var(--lb-accent) 88%, CanvasText) !important;
+}
+
+#button-send[disabled] {
+  border-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+#FormatToolbox,
+#FormatToolbar {
+  border: 0 !important;
+  background: var(--lb-surface-solid) !important;
+  color: var(--lb-label) !important;
+}
+
+#FormatToolbar {
+  box-sizing: border-box !important;
+  min-block-size: 38px !important;
+  margin: 0 !important;
+  padding: 5px 8px !important;
+  gap: 2px !important;
+  box-shadow: 0 -1px var(--lb-separator) !important;
+}
+
+#FormatToolbar > menulist {
+  box-sizing: border-box !important;
+  block-size: 28px !important;
+  min-block-size: 28px !important;
+  margin: 0 !important;
+  padding-block: 0 !important;
+  border: 1px solid var(--lb-control-border) !important;
+  border-radius: var(--lb-radius-field) !important;
+  background: var(--lb-control-fill) !important;
+  color: var(--lb-label) !important;
+  box-shadow: inset 0 1px var(--lb-control-highlight) !important;
+}
+
+#FormatToolbar > menulist:hover {
+  border-color: var(--lb-strong-separator) !important;
+  background: var(--lb-control-fill-hover) !important;
+}
+
+#FormatToolbar > menulist[open="true"] {
+  border-color: var(--lb-accent) !important;
+  background: var(--lb-control-fill-pressed) !important;
+  box-shadow: 0 0 0 2px var(--lb-focus-ring) !important;
+}
+
+#FormatToolbar > .formatting-button {
+  box-sizing: border-box !important;
+  min-inline-size: 28px !important;
+  inline-size: 28px !important;
+  min-block-size: 28px !important;
+  block-size: 28px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 1px solid transparent !important;
+  border-radius: var(--lb-radius-small) !important;
+  background: transparent !important;
+  color: var(--lb-icon-secondary) !important;
+  box-shadow: none !important;
+  fill: currentColor !important;
+  stroke: currentColor !important;
+}
+
+#FormatToolbar > .formatting-button:not([disabled]):hover {
+  border-color: var(--lb-control-border) !important;
+  background: var(--lb-control-fill-hover) !important;
+  color: var(--lb-icon-primary) !important;
+}
+
+#FormatToolbar > .formatting-button:is([checked="true"], [checked], [open="true"]) {
+  border-color: color-mix(in srgb, var(--lb-accent) 28%, var(--lb-control-border)) !important;
+  background: var(--lb-selection) !important;
+  color: var(--lb-icon-selected) !important;
+}
+
+#FormatToolbar toolbarseparator {
+  min-inline-size: 1px !important;
+  inline-size: 1px !important;
+  margin-inline: 3px !important;
+  border: 0 !important;
+  background: var(--lb-separator) !important;
+}
+
+#color-buttons-container {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+#ColorButtons {
+  margin: 0 !important;
+  transform: scale(0.88) !important;
+}
+
+#FormatToolbar .color-button {
+  border-color: var(--lb-control-border) !important;
+}
+
+#messageArea,
+#messageEditor {
+  background: light-dark(rgb(255 255 255), rgb(29 29 31)) !important;
+}
+
+.attachmentItem {
+  min-height: 26px !important;
+  margin: 2px !important;
+  padding-inline: 6px !important;
+  border-color: transparent !important;
+  border-radius: var(--lb-radius-small) !important;
+}
+
+.attachmentItem[selected="true"] {
+  border-color: var(--lb-control-border) !important;
+  background: var(--lb-selection-inactive) !important;
+}
+
+.attachmentList:focus .attachmentItem[selected="true"] {
+  border-color: transparent !important;
+  background: var(--lb-accent) !important;
+  color: var(--lb-accent-text) !important;
+}
+
+#status-bar {
+  border-top: 1px solid var(--lb-separator) !important;
+  background: var(--lb-content) !important;
+  color: var(--lb-secondary-label) !important;
+}
+
+dialog,
+.dialogBox,
+.dialog-content-box,
+.account-dialog {
+  border-radius: var(--lb-radius-window) !important;
+  background: var(--lb-surface-solid) !important;
+}
+
+menupopup,
+panel,
+.panel-arrowcontent,
+.arrowpanel-content {
+  border: 1px solid var(--lb-separator) !important;
+  border-radius: var(--lb-radius-surface) !important;
+  box-shadow: var(--lb-shadow-2) !important;
+}
+
+/* Gecko gives macOS menu popup windows their own native Tahoe material,
+ * outline, radius, and shadow. Decorating the XUL host as well draws a second
+ * inset frame, especially visibly on nested submenus. */
+@media (-moz-platform: macos) {
+  menupopup {
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+}
+
+menuitem,
+menu,
+.menuitem-iconic {
+  min-height: 22px !important;
+  border-radius: 6px !important;
+}
+
+menuitem:is([_moz-menuactive="true"], [selected="true"]),
+menu:is([_moz-menuactive="true"], [selected="true"]) {
+  background: var(--lb-accent) !important;
+  color: var(--lb-accent-text) !important;
+}
+
+menuseparator {
+  margin-block: 4px !important;
+  border-color: var(--lb-separator) !important;
+}
+
+:is(menuitem, menu)[disabled="true"] {
+  color: var(--lb-tertiary-label) !important;
+  opacity: 0.65 !important;
+}
+
+:is(menuitem, menu)[data-l10n-id*="delete"],
+:is(menuitem, menu)[data-l10n-id*="remove"] {
+  color: var(--lb-critical) !important;
+}
+
+:is(menuitem, menu):is([_moz-menuactive="true"], [selected="true"]):is(
+  [data-l10n-id*="delete"],
+  [data-l10n-id*="remove"]
+) {
+  color: var(--lb-accent-text) !important;
+}
+
+/* Keep the macOS 26/27 native glass menu appearance that Gecko supplies. */
+@media not (-moz-platform: macos) {
+  menupopup,
+  panel,
+  .panel-arrowcontent,
+  .arrowpanel-content {
+    background: var(--lb-surface-raised) !important;
+    backdrop-filter: blur(28px) saturate(150%) !important;
+  }
+}
+
+/* ========================================================================== */
+/* Shared controls and macOS 27 physical feedback                              */
+/* ========================================================================== */
+
+:is(button, .button, toolbarbutton):not(.button-reset):focus-visible,
+:is(input, textarea, select, menulist):focus-visible {
+  outline: 2px solid var(--lb-focus-ring) !important;
+  outline-offset: 1px !important;
+}
+
+button:not(.button-reset),
+.button:not(.button-reset),
+toolbarbutton {
+  min-height: var(--lb-control-height) !important;
+  border-radius: var(--lb-radius-rectangle) !important;
+  transition: background-color 140ms ease, border-color 140ms ease, transform 90ms ease-out, box-shadow 140ms ease !important;
+}
+
+:is(.button-primary, .notification-button, .dialog-button-box button, dialog button, toolbarbutton),
+:is(button, .button).icon-button:not(.icon-only) {
+  border-radius: var(--lb-radius-pill) !important;
+}
+
+:is(
+  .sidebar-panel-header,
+  .list-header-bar,
+  #quick-filter-bar,
+  #messageHeader,
+  #unifiedToolbar,
+  toolbar,
+  .toolbar
+) :is(button, .button, toolbarbutton).icon-only {
+  box-sizing: border-box !important;
+  width: var(--lb-toolbar-control-height) !important;
+  min-width: var(--lb-toolbar-control-height) !important;
+  height: var(--lb-toolbar-control-height) !important;
+  min-height: var(--lb-toolbar-control-height) !important;
+  padding: 0 !important;
+  border-radius: var(--lb-radius-circle) !important;
+}
+
+:is(button, .button).button-flat,
+toolbarbutton.button-flat {
+  border-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+:is(button, .button).button-flat:hover,
+toolbarbutton.button-flat:hover {
+  background: var(--lb-control-fill-hover) !important;
+}
+
+button:not(.button-reset):active,
+.button:not(.button-reset):active,
+toolbarbutton:active {
+  transform: scale(0.97) !important;
+}
+
+:is(button, .button, toolbarbutton)[disabled],
+:is(button, .button, toolbarbutton)[aria-disabled="true"] {
+  color: var(--lb-icon-tertiary) !important;
+  opacity: 0.55 !important;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="search"]),
+textarea,
+select,
+menulist,
+search-textbox {
+  border-color: var(--lb-separator) !important;
+  border-radius: var(--lb-radius-field) !important;
+}
+
+/* ========================================================================== */
+/* Tab glyphs                                                                 */
+/* ========================================================================== */
+
+.tab-icon-image {
+  content: none !important;
+  width: 16px !important;
+  height: 16px !important;
+  background: var(--lb-icon-secondary) !important;
+  stroke: transparent !important;
+  mask-repeat: no-repeat !important;
+  mask-position: center !important;
+  mask-size: contain !important;
+}
+
+.tabmail-tab[selected="true"] .tab-icon-image {
+  background: var(--lb-icon-selected) !important;
+}
+
+.tab-icon-image[src*="inbox.svg"] { mask-image: url("Icons/inbox.svg") !important; }
+.tab-icon-image[src*="folder.svg"] { mask-image: url("Icons/folder.svg") !important; }
+.tab-icon-image[src*="spam.svg"] { mask-image: url("Icons/shield-alert.svg") !important; }
+.tab-icon-image[src*="trash.svg"] { mask-image: url("Icons/trash-2.svg") !important; }
+.tab-icon-image[src*="address-book.svg"] { mask-image: url("Icons/contact.svg") !important; }
+.tab-icon-image[src*="tasks.svg"] { mask-image: url("Icons/list-checks.svg") !important; }
+.tab-icon-image[src*="calendar.svg"] { mask-image: url("Icons/calendar-days.svg") !important; }
+.tab-icon-image[src*="chat.svg"] { mask-image: url("Icons/messages-square.svg") !important; }
+.tab-icon-image[src*="settings.svg"] { mask-image: url("Icons/settings.svg") !important; }
+.tab-icon-image[src*="mail-secure.svg"] { mask-image: url("Icons/mail.svg") !important; }
+.tab-icon-image[src*="account-settings.svg"] { mask-image: url("Icons/contact.svg") !important; }
+.tab-icon-image[src*="extension.svg"] { mask-image: url("Icons/puzzle.svg") !important; }
+
+/* ========================================================================== */
+/* Accessibility                                                             */
+/* ========================================================================== */
+
+:root:-moz-window-inactive :is(
+  #spacesToolbar,
+  #folderPane,
+  #threadPaneHeaderBar,
+  #messageHeader,
+  #unifiedToolbar
+) {
+  filter: saturate(0.72) !important;
+}
+
+:root:-moz-window-inactive :is(
+  #spacesToolbar .current,
+  #folderTree li.selected > .container,
+  #threadTree .selected.current .card-container
+) {
+  background: var(--lb-selection-inactive) !important;
+  color: var(--lb-label) !important;
+  box-shadow: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+
+  :is(button, .button, toolbarbutton, .tabmail-tab):active {
+    transform: none !important;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --lb-surface: var(--lb-surface-solid);
+    --lb-surface-raised: var(--lb-surface-solid);
+    --lb-sidebar-fallback: light-dark(rgb(235 235 238), rgb(39 39 42));
+  }
+
+  #threadPaneHeaderBar,
+  #messageHeader,
+  #today-pane-panel > .sidebar-header,
+  unified-toolbar,
+  #compose-toolbox,
+  #composeToolbar2,
+  panel,
+  menupopup {
+    backdrop-filter: none !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --lb-secondary-label: color-mix(in srgb, CanvasText 86%, transparent);
+    --lb-tertiary-label: color-mix(in srgb, CanvasText 72%, transparent);
+    --lb-separator: color-mix(in srgb, CanvasText 46%, transparent);
+    --lb-strong-separator: color-mix(in srgb, CanvasText 72%, transparent);
+    --lb-hover: color-mix(in srgb, CanvasText 16%, transparent);
+    --lb-selection: color-mix(in srgb, AccentColor 34%, transparent);
+    --lb-control-border: color-mix(in srgb, CanvasText 54%, transparent);
+    --lb-control-fill: color-mix(in srgb, Canvas 90%, CanvasText 10%);
+  }
+
+  :is(button, .button, toolbarbutton, input, textarea, select, menulist) {
+    border-color: var(--lb-strong-separator) !important;
+  }
+}
+
+@media (forced-colors: active) {
+  :root {
+    --lb-accent: Highlight;
+    --lb-accent-text: HighlightText;
+    --lb-label: CanvasText;
+    --lb-secondary-label: CanvasText;
+    --lb-tertiary-label: CanvasText;
+    --lb-control-border: ButtonText;
+    --lb-focus-ring: Highlight;
+  }
+
+  :is(.tab-icon-image, #folderTree .icon, .toolbarbutton-icon, [class*="-icon"]) {
+    forced-color-adjust: auto !important;
+  }
+}
+
+@media (-moz-platform: macos) and (prefers-reduced-transparency: no-preference) {
+  #folderPane,
+  #spacesToolbar {
+    background: transparent !important;
+  }
+}
