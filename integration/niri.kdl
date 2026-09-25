@@ -16,6 +16,10 @@ window-rule {
     }
 
     popups {
+        // Match the outer edge of Thunderbird's rounded XUL menu. Without
+        // this, niri's background blur fills the square popup geometry.
+        geometry-corner-radius 18
+
         background-effect {
             blur true
             xray false

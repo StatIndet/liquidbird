@@ -105,6 +105,8 @@ blurs only where LiquidBird's CSS exposes alpha. The mail list and reading
 pane remain opaque. If niri rejects `background-effect`, use a build that
 supports that option or omit the rule; installing a CSS package cannot add
 compositor blur.
+The popup rule sets an 18 px corner radius so niri clips its own blur behind
+Thunderbird's rounded menus.
 
 If Thunderbird inherits `GDK_BACKEND=x11` from your session, launch it with
 `GDK_BACKEND=wayland MOZ_ENABLE_WAYLAND=1` so the native Wayland rule can

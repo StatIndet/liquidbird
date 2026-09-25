@@ -40,4 +40,10 @@
       background-color: transparent !important;
     }
   }
+
+  /* Thunderbird draws its own popup shadow outside the rounded panel;
+   * niri supplies a matching compositor shadow for this surface. */
+  #appMenu-popup {
+    box-shadow: none !important;
+  }
 }
