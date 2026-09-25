@@ -40,8 +40,8 @@ it provides access to commands that macOS exposes through its native menu bar.
 No additional runtime package was required on the stage 1 machine: its
 Thunderbird, niri, and MacTahoe GTK theme were already installed.
 
-Until a fork release is tagged, build the installable ZIP from this branch with
-`python3 scripts/package_release.py --output dist`. The generated ZIP and
+Until a Linux port release is tagged, build the installable ZIP from this
+checkout with `python3 scripts/package_release.py --output dist`. The generated ZIP and
 `SHA256SUMS` are in `dist/`; check the checksum from that directory with
 `(cd dist && sha256sum -c SHA256SUMS)`.
 

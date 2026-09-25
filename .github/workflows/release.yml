@@ -4,6 +4,12 @@ on:
   push:
     tags:
       - "v*.*.*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing release tag (for example, v0.2.0)"
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -11,23 +17,33 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
+    env:
+      RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+          fetch-depth: 0
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Verify release tag
+        shell: bash
+        run: |
+          [[ "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          test "${RELEASE_TAG#v}" = "$(tr -d '\n' < VERSION)"
+          git fetch origin main
+          git merge-base --is-ancestor HEAD origin/main
+          test "$(git rev-parse HEAD)" = "$(git rev-parse "refs/tags/$RELEASE_TAG^{commit}")"
       - name: Validate repository
         run: python3 scripts/check.py
       - name: Test synthetic demo profile
         run: python3 -m unittest discover -s tests
-      - name: Verify tag version
-        shell: bash
-        run: test "${GITHUB_REF_NAME#v}" = "$(tr -d '\n' < VERSION)"
       - name: Build release archive
-        run: python3 scripts/package_release.py --version "${GITHUB_REF_NAME#v}" --output dist
+        run: python3 scripts/package_release.py --version "${RELEASE_TAG#v}" --output dist
       - name: Publish GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" dist/LiquidBird-*.zip dist/SHA256SUMS --verify-tag --generate-notes --title "LiquidBird $GITHUB_REF_NAME"
+        run: gh release create "$RELEASE_TAG" dist/LiquidBird-*.zip dist/SHA256SUMS --verify-tag --generate-notes --title "LiquidBird $RELEASE_TAG"

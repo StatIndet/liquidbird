@@ -31,9 +31,13 @@ released frequently without implying support for every Thunderbird version.
 ## Publish
 
 Commit the prepared release, create an annotated `v<version>` tag, and push the
-commit and tag. The release workflow verifies that the tag matches `VERSION`,
-runs all checks, rebuilds the ZIP, and publishes the ZIP and checksum as a
-GitHub release.
+commit to `main`, then push the tag. The release workflow verifies that the tag
+matches `VERSION` and points to a commit on `main`, runs all checks, rebuilds
+the ZIP, and publishes the ZIP and checksum as a GitHub release. To retry a
+failed publication, run the **Release** workflow manually from GitHub Actions
+and enter the existing tag. A version tag from an earlier release cannot be
+reused for a new commit; update `VERSION` and create a new tag for the Linux
+port release.
 
 Do not create or push the tag until the commit is ready to be public. Never
 publish a Thunderbird profile, a populated `custom.css`, generated `.DS_Store`
