@@ -1,0 +1,21 @@
+/* Match LiquidBird's Mac typography in Thunderbird's own content documents.
+ * This is intentionally URL-scoped so it never changes the body of an email. */
+@media (-moz-platform: linux) {
+  @-moz-document url-prefix("about:preferences"),
+                 url-prefix("about:accountsettings"),
+                 url-prefix("chrome://messenger/content/AccountManager.xhtml"),
+                 url-prefix("chrome://messenger/content/am-"),
+                 url-prefix("about:addons"),
+                 url-prefix("about:addressbook"),
+                 url-prefix("about:calendar"),
+                 url-prefix("chrome://messenger/content/preferences"),
+                 url-prefix("chrome://messenger/content/about-support") {
+    :root {
+      font-family: "Adwaita Sans", "Noto Sans", sans-serif !important;
+      --lb-accent: light-dark(#007aff, #0a84ff);
+      --lb-accent-text: #fff;
+      --lb-selection: color-mix(in srgb, var(--lb-accent) 20%, transparent);
+      --lb-focus-ring: color-mix(in srgb, var(--lb-accent) 72%, transparent);
+    }
+  }
+}

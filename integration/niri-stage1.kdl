@@ -1,0 +1,11 @@
+// Include this file temporarily in ~/.config/niri/config.kdl for the material
+// test. The app-id was measured on a native Wayland Thunderbird 156.0 window.
+window-rule {
+    match app-id=r#"^org\.mozilla\.Thunderbird$"#
+    opacity 1.0
+    draw-border-with-background false
+    background-effect {
+        blur true
+        xray false
+    }
+}

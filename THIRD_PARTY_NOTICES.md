@@ -26,3 +26,17 @@ Feather and additionally carry Feather's MIT notice. Both notices are included
 in `licenses/LUCIDE.txt`.
 
 Copyright (c) 2026 Lucide Icons and Contributors.
+
+## MacTahoe GTK theme
+
+Upstream: <https://github.com/vinceliuice/MacTahoe-gtk-theme>
+
+Revision bundled: `f19899811eff6d127afc38c4fa4981b220cb2ea2`
+
+The 40 PNG title-button images under `linux/titlebuttons/` are copied from
+`src/assets/gtk/windows-assets/titlebutton/` at that revision. They are used
+only by LiquidBird's Linux titlebar styling. The MacTahoe GTK theme itself is
+not bundled.
+
+These images are distributed under the MIT license. The upstream license text,
+including its copyright notice, is included at `licenses/MACTAHOE.txt`.

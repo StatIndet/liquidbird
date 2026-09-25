@@ -112,6 +112,17 @@ synthetic Inbox message after the database view is ready. The connection is
 closed before capture completes and the isolated Thunderbird process is then
 terminated.
 
+## Linux/niri verification captures
+
+The two `liquidbird-linux-niri-*.png` images were taken from the same synthetic
+offline fixture on Thunderbird 156.0 and native Wayland on 2026-09-25. The
+window was floated at approximately 1440 × 960 logical pixels in niri with
+the rule from `integration/niri.kdl`; the first synthetic message was selected.
+The dark and light images show active title buttons. niri's window shadow and
+the Today Pane date follow the running desktop, so they differ from the older
+macOS captures. The Linux `launch` command supports manual inspection;
+`capture` still uses macOS system tools.
+
 ## Fixture contents
 
 The profile contains:

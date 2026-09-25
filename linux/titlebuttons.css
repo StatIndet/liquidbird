@@ -1,0 +1,156 @@
+/* macOS-style traffic lights for Thunderbird 156's Linux client-side titlebar.
+ * The images are from MacTahoe-gtk-theme; see licenses/MACTAHOE.txt and
+ * THIRD_PARTY_NOTICES.md.
+ * Load this after liquidbird.css and linux/chrome.css. */
+
+@media (-moz-platform: linux) {
+  /* Thunderbird's template places the button box after #unifiedToolbar.
+   * Its stock Linux CSS can reverse the row based on GTK's decoration layout.
+   * Always put the traffic lights at the physical left edge. */
+  :root[customtitlebar] #unifiedToolbarContainer {
+    flex-direction: row-reverse !important;
+  }
+
+  :root[customtitlebar] .titlebar-buttonbox-container {
+    box-sizing: border-box !important;
+    align-self: stretch !important;
+    padding: 0 8px 0 7px !important;
+    direction: ltr !important;
+  }
+
+  :root[customtitlebar] .titlebar-buttonbox {
+    display: flex !important;
+    align-items: center !important;
+    gap: 1px !important;
+  }
+
+  :root[customtitlebar] .titlebar-button {
+    box-sizing: border-box !important;
+    flex: 0 0 22px !important;
+    inline-size: 22px !important;
+    min-inline-size: 22px !important;
+    max-inline-size: 22px !important;
+    block-size: 28px !important;
+    min-block-size: 28px !important;
+    max-block-size: 28px !important;
+    padding: 0 3px !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    -moz-window-dragging: no-drag !important;
+  }
+
+  /* The actual XUL controls and their commands are supplied by Thunderbird.
+   * Keep the maximized/restore visibility rules from its stock stylesheet. */
+  :root[customtitlebar] .titlebar-close { order: 0 !important; }
+  :root[customtitlebar] .titlebar-min { order: 1 !important; }
+  :root[customtitlebar] :is(.titlebar-max, .titlebar-restore) { order: 2 !important; }
+
+  :root[customtitlebar] .titlebar-button > .toolbarbutton-icon {
+    box-sizing: border-box !important;
+    appearance: none !important;
+    inline-size: 16px !important;
+    min-inline-size: 16px !important;
+    max-inline-size: 16px !important;
+    block-size: 16px !important;
+    min-block-size: 16px !important;
+    max-block-size: 16px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background-color: transparent !important;
+    background-image: var(--lb-titlebutton-normal) !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    background-size: 16px 16px !important;
+    box-shadow: none !important;
+    transition: none !important;
+  }
+
+  :root[customtitlebar] .titlebar-button:hover > .toolbarbutton-icon {
+    background-image: var(--lb-titlebutton-hover) !important;
+  }
+
+  :root[customtitlebar] .titlebar-button:active > .toolbarbutton-icon {
+    background-image: var(--lb-titlebutton-active) !important;
+  }
+
+  :root[customtitlebar]:-moz-window-inactive .titlebar-button > .toolbarbutton-icon {
+    background-image: var(--lb-titlebutton-backdrop) !important;
+  }
+
+  :root[customtitlebar]:-moz-window-inactive .titlebar-button:hover > .toolbarbutton-icon {
+    background-image: var(--lb-titlebutton-backdrop-hover) !important;
+  }
+
+  :root[customtitlebar] .titlebar-button:focus-visible > .toolbarbutton-icon {
+    outline: 2px solid var(--lb-focus-ring, AccentColor) !important;
+    outline-offset: 2px !important;
+  }
+
+  .titlebar-close {
+    --lb-titlebutton-normal: url("titlebuttons/titlebutton-close@2.png");
+    --lb-titlebutton-hover: url("titlebuttons/titlebutton-close-hover@2.png");
+    --lb-titlebutton-active: url("titlebuttons/titlebutton-close-active@2.png");
+    --lb-titlebutton-backdrop: url("titlebuttons/titlebutton-close-backdrop@2.png");
+    --lb-titlebutton-backdrop-hover: url("titlebuttons/titlebutton-close-backdrop-hover@2.png");
+  }
+
+  .titlebar-min {
+    --lb-titlebutton-normal: url("titlebuttons/titlebutton-minimize@2.png");
+    --lb-titlebutton-hover: url("titlebuttons/titlebutton-minimize-hover@2.png");
+    --lb-titlebutton-active: url("titlebuttons/titlebutton-minimize-active@2.png");
+    --lb-titlebutton-backdrop: url("titlebuttons/titlebutton-minimize-backdrop@2.png");
+    --lb-titlebutton-backdrop-hover: url("titlebuttons/titlebutton-minimize-backdrop-hover@2.png");
+  }
+
+  .titlebar-max {
+    --lb-titlebutton-normal: url("titlebuttons/titlebutton-maximize@2.png");
+    --lb-titlebutton-hover: url("titlebuttons/titlebutton-maximize-hover@2.png");
+    --lb-titlebutton-active: url("titlebuttons/titlebutton-maximize-active@2.png");
+    --lb-titlebutton-backdrop: url("titlebuttons/titlebutton-maximize-backdrop@2.png");
+    --lb-titlebutton-backdrop-hover: url("titlebuttons/titlebutton-maximize-backdrop-hover@2.png");
+  }
+
+  .titlebar-restore {
+    --lb-titlebutton-normal: url("titlebuttons/titlebutton-restore@2.png");
+    --lb-titlebutton-hover: url("titlebuttons/titlebutton-restore-hover@2.png");
+    --lb-titlebutton-active: url("titlebuttons/titlebutton-restore-active@2.png");
+    --lb-titlebutton-backdrop: url("titlebuttons/titlebutton-restore-backdrop@2.png");
+    --lb-titlebutton-backdrop-hover: url("titlebuttons/titlebutton-restore-backdrop-hover@2.png");
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .titlebar-close {
+      --lb-titlebutton-normal: url("titlebuttons/titlebutton-close-dark@2.png");
+      --lb-titlebutton-hover: url("titlebuttons/titlebutton-close-hover-dark@2.png");
+      --lb-titlebutton-active: url("titlebuttons/titlebutton-close-active-dark@2.png");
+      --lb-titlebutton-backdrop: url("titlebuttons/titlebutton-close-backdrop-dark@2.png");
+      --lb-titlebutton-backdrop-hover: url("titlebuttons/titlebutton-close-backdrop-hover-dark@2.png");
+    }
+
+    .titlebar-min {
+      --lb-titlebutton-normal: url("titlebuttons/titlebutton-minimize-dark@2.png");
+      --lb-titlebutton-hover: url("titlebuttons/titlebutton-minimize-hover-dark@2.png");
+      --lb-titlebutton-active: url("titlebuttons/titlebutton-minimize-active-dark@2.png");
+      --lb-titlebutton-backdrop: url("titlebuttons/titlebutton-minimize-backdrop-dark@2.png");
+      --lb-titlebutton-backdrop-hover: url("titlebuttons/titlebutton-minimize-backdrop-hover-dark@2.png");
+    }
+
+    .titlebar-max {
+      --lb-titlebutton-normal: url("titlebuttons/titlebutton-maximize-dark@2.png");
+      --lb-titlebutton-hover: url("titlebuttons/titlebutton-maximize-hover-dark@2.png");
+      --lb-titlebutton-active: url("titlebuttons/titlebutton-maximize-active-dark@2.png");
+      --lb-titlebutton-backdrop: url("titlebuttons/titlebutton-maximize-backdrop-dark@2.png");
+      --lb-titlebutton-backdrop-hover: url("titlebuttons/titlebutton-maximize-backdrop-hover-dark@2.png");
+    }
+
+    .titlebar-restore {
+      --lb-titlebutton-normal: url("titlebuttons/titlebutton-restore-dark@2.png");
+      --lb-titlebutton-hover: url("titlebuttons/titlebutton-restore-hover-dark@2.png");
+      --lb-titlebutton-active: url("titlebuttons/titlebutton-restore-active-dark@2.png");
+      --lb-titlebutton-backdrop: url("titlebuttons/titlebutton-restore-backdrop-dark@2.png");
+      --lb-titlebutton-backdrop-hover: url("titlebuttons/titlebutton-restore-backdrop-hover-dark@2.png");
+    }
+  }
+}

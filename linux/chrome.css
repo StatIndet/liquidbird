@@ -1,0 +1,43 @@
+/* Linux/Wayland material layer. Keep the window at opacity 1: only the
+ * individual chrome surfaces use alpha, so message content stays sharp. */
+@media (-moz-platform: linux) {
+  :root {
+    font-family: "Adwaita Sans", "Noto Sans", sans-serif !important;
+    /* The README reference uses the macOS blue accent. Keep this Linux
+     * default independent of the current GTK accent; custom.css may override. */
+    --lb-accent: light-dark(#007aff, #0a84ff);
+    --lb-accent-text: #fff;
+    --lb-selection: color-mix(in srgb, var(--lb-accent) 20%, transparent);
+    --lb-selection-strong: color-mix(in srgb, var(--lb-accent) 32%, transparent);
+    --lb-focus-ring: color-mix(in srgb, var(--lb-accent) 72%, transparent);
+    --lb-linux-material: light-dark(
+      rgb(235 235 238 / 0.70),
+      rgb(46 46 49 / 0.70)
+    );
+  }
+
+  #messengerWindow {
+    appearance: none !important;
+    background-color: transparent !important;
+  }
+
+  #titlebar,
+  #tabpanelcontainer {
+    background-color: transparent !important;
+    background-image: none !important;
+  }
+
+  #tabs-toolbar,
+  #spacesToolbar,
+  #folderPane {
+    appearance: none !important;
+    background-color: var(--lb-linux-material) !important;
+    background-image: none !important;
+  }
+
+  @-moz-document url("about:3pane") {
+    :root {
+      background-color: transparent !important;
+    }
+  }
+}

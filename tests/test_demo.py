@@ -101,6 +101,16 @@ class DemoProfileTest(unittest.TestCase):
         ):
             self.assertEqual((ROOT / name).read_bytes(), (chrome / name).read_bytes())
         self.assertEqual(
+            {
+                path.relative_to(ROOT / "linux"): path.read_bytes()
+                for path in (ROOT / "linux").rglob("*") if path.is_file()
+            },
+            {
+                path.relative_to(chrome / "linux"): path.read_bytes()
+                for path in (chrome / "linux").rglob("*") if path.is_file()
+            },
+        )
+        self.assertEqual(
             {path.name for path in (ROOT / "Icons").glob("*.svg")},
             {path.name for path in (chrome / "Icons").glob("*.svg")},
         )

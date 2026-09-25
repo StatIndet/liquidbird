@@ -1,2 +1,3 @@
-/* LiquidBird internal-page loader. Keep this import before any personal rules. */
+/* LiquidBird internal-page loader. The Linux layer is platform-gated. */
 @import url("liquidbird-content.css");
+@import url("linux/content.css");

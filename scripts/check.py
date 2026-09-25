@@ -14,7 +14,7 @@ from urllib.parse import unquote, urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
 SKIP_DIRS = {".demo", ".git", "dist", "__pycache__"}
-TEXT_SUFFIXES = {".css", ".html", ".md", ".py", ".yml", ".yaml", ".txt"}
+TEXT_SUFFIXES = {".css", ".html", ".kdl", ".md", ".py", ".yml", ".yaml", ".txt"}
 REQUIRED = {
     ".gitattributes",
     ".gitignore",
@@ -29,11 +29,24 @@ REQUIRED = {
     "liquidbird.css",
     "liquidbird-content.css",
     "custom.css",
+    "docs/LINUX.md",
     "docs/screenshots/liquidbird-mail-dark.png",
     "docs/screenshots/liquidbird-mail-light.png",
+    "integration/niri.kdl",
+    "linux/chrome.css",
+    "linux/content.css",
+    "linux/mail-layout.css",
+    "linux/titlebuttons.css",
+    "licenses/MACTAHOE.txt",
     "userChrome.css",
     "userContent.css",
 }
+LINUX_STYLESHEETS = (
+    "linux/chrome.css",
+    "linux/content.css",
+    "linux/mail-layout.css",
+    "linux/titlebuttons.css",
+)
 
 
 class Checks:
@@ -145,6 +158,31 @@ def check_css_balance(checks: Checks, path: Path) -> None:
     checks.check(not stack, f"{path.relative_to(ROOT)}: unclosed {{ from line {stack[-1] if stack else '?'}")
 
 
+def check_linux_platform_scope(checks: Checks, path: Path) -> None:
+    """Keep the shared loader's Linux imports inert on macOS."""
+    source = strip_css_comments_and_strings(path.read_text(encoding="utf-8"))
+    depth = 0
+    prelude: list[str] = []
+    top_level_blocks = 0
+    for char in source:
+        if char == "{":
+            if depth == 0:
+                top_level_blocks += 1
+                checks.check(
+                    "".join(prelude).strip().startswith("@media (-moz-platform: linux)"),
+                    f"{path.relative_to(ROOT)}: top-level CSS must be gated to Linux",
+                )
+                prelude.clear()
+            depth += 1
+        elif char == "}":
+            depth -= 1
+            if depth == 0:
+                prelude.clear()
+        elif depth == 0:
+            prelude.append(char)
+    checks.check(top_level_blocks > 0, f"{path.relative_to(ROOT)}: no Linux-scoped CSS blocks")
+
+
 def local_target(raw_target: str) -> str | None:
     target = unquote(raw_target.strip().strip('"\''))
     if not target or target.startswith(("#", "data:", "var(")):
@@ -219,8 +257,14 @@ def check_checksums(checks: Checks) -> None:
             checks.check(actual == expected, f"Third-party file changed without manifest update: {relative}")
     expected_entries = {
         path.relative_to(ROOT).as_posix() for path in (ROOT / "Icons").glob("*.svg")
-    } | {"licenses/FLUENTBIRD.txt", "licenses/LUCIDE.txt"}
-    checks.check(entries == expected_entries, "Third-party checksum manifest does not exactly cover Icons/*.svg and licenses/*.txt")
+    } | {
+        path.relative_to(ROOT).as_posix()
+        for path in (ROOT / "linux/titlebuttons").glob("*.png")
+    } | {"licenses/FLUENTBIRD.txt", "licenses/LUCIDE.txt", "licenses/MACTAHOE.txt"}
+    checks.check(
+        entries == expected_entries,
+        "Third-party checksum manifest must exactly cover bundled icons, title buttons, and licenses",
+    )
 
 
 def main() -> int:
@@ -255,16 +299,33 @@ def main() -> int:
         if path.suffix == ".svg":
             check_svg(checks, path)
 
+    for relative in LINUX_STYLESHEETS:
+        path = ROOT / relative
+        if path.is_file():
+            check_linux_platform_scope(checks, path)
+
     user_chrome = (ROOT / "userChrome.css").read_text(encoding="utf-8")
+    chrome_imports = re.findall(r'^@import\s+url\("([^"]+)"\);\s*$', user_chrome, re.MULTILINE)
     checks.check(
-        user_chrome.find('@import url("liquidbird.css");') < user_chrome.find('@import url("custom.css");'),
-        "userChrome.css must import liquidbird.css before custom.css",
+        chrome_imports == [
+            "liquidbird.css",
+            "linux/chrome.css",
+            "linux/mail-layout.css",
+            "linux/titlebuttons.css",
+            "custom.css",
+        ],
+        "userChrome.css must import core, Linux layers, then custom CSS in that order",
     )
     user_content = (ROOT / "userContent.css").read_text(encoding="utf-8")
-    checks.check('@import url("liquidbird-content.css");' in user_content, "userContent.css must import liquidbird-content.css")
+    content_imports = re.findall(r'^@import\s+url\("([^"]+)"\);\s*$', user_content, re.MULTILINE)
+    checks.check(
+        content_imports == ["liquidbird-content.css", "linux/content.css"],
+        "userContent.css must import core content CSS before Linux content CSS",
+    )
     notices = (ROOT / "THIRD_PARTY_NOTICES.md").read_text(encoding="utf-8")
     checks.check("471eace530c469ed97c943b07927939e83cf8966" in notices, "Pinned FluentBird revision missing")
     checks.check("33342b87902b8d2e596fbcddb01a253c6e6586d0" in notices, "Pinned Lucide revision missing")
+    checks.check("f19899811eff6d127afc38c4fa4981b220cb2ea2" in notices, "Pinned MacTahoe revision missing")
     check_checksums(checks)
 
     if checks.errors:

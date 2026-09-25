@@ -2,8 +2,8 @@
 """Build and photograph a private-data-free LiquidBird Thunderbird demo.
 
 The generated profile is deliberately disposable, offline, and limited to
-synthetic data. Screenshot capture uses only macOS system tools and the
-installed Thunderbird application; profile generation is cross-platform.
+synthetic data. Automated screenshot capture uses macOS system tools; the
+profile can also be launched on Linux/Wayland for manual inspection.
 """
 
 from __future__ import annotations
@@ -34,7 +34,9 @@ DEFAULT_PROFILE = DEMO_ROOT / "profile"
 DEFAULT_SCREENSHOTS = DEMO_ROOT / "screenshots"
 README_SCREENSHOTS = ROOT / "docs" / "screenshots"
 DEFAULT_THUNDERBIRD = Path(
-    "/Applications/Thunderbird Beta.app/Contents/MacOS/thunderbird"
+    shutil.which("thunderbird") or "/usr/bin/thunderbird"
+    if sys.platform.startswith("linux")
+    else "/Applications/Thunderbird Beta.app/Contents/MacOS/thunderbird"
 )
 PROFILE_MARKER = ".liquidbird-demo-profile"
 WINDOW_POSITION = (72, 72)
@@ -361,6 +363,7 @@ def install_theme(profile: Path) -> None:
     ):
         shutil.copy2(ROOT / name, chrome / name)
     shutil.copytree(ROOT / "Icons", chrome / "Icons")
+    shutil.copytree(ROOT / "linux", chrome / "linux")
 
 
 def render_message(spec: MessageSpec, message_index: int, base_date: date, recipient: str) -> bytes:
@@ -382,8 +385,13 @@ def render_message(spec: MessageSpec, message_index: int, base_date: date, recip
     message["X-Mozilla-Status2"] = "00000000"
     message["X-Account-Key"] = "account1"
     message.set_content(spec.body)
+    message_font = (
+        '"Noto Sans", sans-serif'
+        if sys.platform.startswith("linux")
+        else "-apple-system, sans-serif"
+    )
     message.add_alternative(
-        "<html><body style=\"font: 16px -apple-system, sans-serif; line-height: 1.5\">"
+        f'<html><body style="font: 16px {message_font}; line-height: 1.5">'
         f"<p>{html.escape(spec.body).replace(chr(10), '</p><p>')}</p>"
         "<p style=\"color: #6e6e73\">LiquidBird synthetic demo message</p>"
         "</body></html>",
@@ -1175,7 +1183,30 @@ def launch(options: argparse.Namespace, profile: Path) -> None:
     if not executable.is_file():
         raise SystemExit(f"Thunderbird executable not found: {executable}")
     surface = (options.surfaces or ["mail"])[0]
-    process = subprocess.Popen(thunderbird_command(executable, profile, surface))
+    environment = dict(os.environ)
+    if sys.platform.startswith("linux") and environment.get("XDG_SESSION_TYPE") == "wayland":
+        # Some desktop sessions export GDK_BACKEND=x11 globally. The niri
+        # material check needs Thunderbird's native Wayland surface.
+        environment["GDK_BACKEND"] = "wayland"
+        environment["MOZ_ENABLE_WAYLAND"] = "1"
+    if sys.platform.startswith("linux"):
+        log_path = DEMO_ROOT / "thunderbird-launch.log"
+        with log_path.open("ab") as log:
+            process = subprocess.Popen(
+                thunderbird_command(executable, profile, surface),
+                env=environment,
+                stdin=subprocess.DEVNULL,
+                stdout=log,
+                stderr=subprocess.STDOUT,
+                start_new_session=True,
+            )
+        time.sleep(0.5)
+        if process.poll() is not None:
+            raise SystemExit(
+                f"Thunderbird exited with status {process.returncode}; inspect {log_path}"
+            )
+    else:
+        process = subprocess.Popen(thunderbird_command(executable, profile, surface))
     print(f"Launched isolated LiquidBird demo (PID {process.pid}, profile {profile}).")
 
 

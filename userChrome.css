@@ -1,3 +1,6 @@
-/* LiquidBird loader. Keep custom.css second so personal rules win the cascade. */
+/* LiquidBird loader. The Linux layer is platform-gated; keep custom.css last. */
 @import url("liquidbird.css");
+@import url("linux/chrome.css");
+@import url("linux/mail-layout.css");
+@import url("linux/titlebuttons.css");
 @import url("custom.css");

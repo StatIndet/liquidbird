@@ -1,0 +1,52 @@
+/* Linux/Wayland main-window material. Load after linux/chrome.css so the
+ * Thunderbird 156 backing-layer transparency from stage 1 remains in place.
+ * The message list and reading surface deliberately retain their opaque
+ * LiquidBird backgrounds. */
+@media (-moz-platform: linux) and (forced-colors: none) {
+  :root {
+    --lb-linux-top-material: light-dark(
+      rgb(255 255 255 / 0.9),
+      rgb(43 44 46 / 0.92)
+    );
+    --lb-linux-spaces-material: light-dark(
+      rgb(235 236 236 / 0.92),
+      rgb(61 66 66 / 0.80)
+    );
+    --lb-linux-folder-material: light-dark(
+      rgb(255 255 255 / 0.94),
+      rgb(50 50 50 / 0.80)
+    );
+    --lb-linux-agenda-surface: light-dark(rgb(235 236 236), rgb(49 53 53));
+  }
+
+  /* Thunderbird's unified-toolbar host paints only part of the title row.
+   * Back the full toolbox so the Linux titlebar reads as one surface. */
+  #navigation-toolbox {
+    background-color: var(--lb-linux-top-material) !important;
+    background-image: none !important;
+  }
+
+  /* The two left columns use different materials in the README reference.
+   * Both retain alpha so niri can blur the desktop behind them. */
+  #spacesToolbar {
+    background-color: var(--lb-linux-spaces-material) !important;
+  }
+
+  #folderPane {
+    background-color: var(--lb-linux-folder-material) !important;
+  }
+
+  /* Today Pane uses the navigation-rail color, but is a solid surface in the
+   * reference. It also provides the correct base under the translucent header. */
+  #today-pane-panel {
+    background-color: var(--lb-linux-agenda-surface) !important;
+  }
+}
+
+@media (-moz-platform: linux) and (prefers-reduced-transparency: reduce) {
+  :root {
+    --lb-linux-top-material: light-dark(rgb(255 255 255), rgb(43 44 46));
+    --lb-linux-spaces-material: light-dark(rgb(235 236 236), rgb(49 53 53));
+    --lb-linux-folder-material: light-dark(rgb(255 255 255), rgb(40 40 40));
+  }
+}

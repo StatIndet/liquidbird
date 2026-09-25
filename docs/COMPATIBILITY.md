@@ -9,9 +9,10 @@ that every future point release will remain compatible.
 | LiquidBird | Thunderbird | Operating system | Appearance | Density | Message list | Pane layout |
 | --- | --- | --- | --- | --- | --- | --- |
 | 0.1.0 | Thunderbird Beta 154.0, build 15426.7.21 | macOS 27 | Light and dark | Default | Card and table | Vertical and classic |
+| Linux/niri port branch | Thunderbird 156.0 (`156.0-1`) | Arch Linux, native Wayland, niri `26.04` modified build | Light and dark | Default | Card | Vertical |
 
-The primary development layout uses default density, card view, and vertical
-view. Table view and classic layout were also exercised during development.
+The primary macOS development layout uses default density, card view, and
+vertical view. Table view and classic layout were also exercised on macOS.
 CSS coverage exists for compact and touch density and wide layout, but those
 configurations remain best-effort because they have not completed a formal
 release check.
@@ -21,9 +22,29 @@ release check.
 | Configuration | Support level | Notes |
 | --- | --- | --- |
 | Thunderbird 140–153 | Best effort | Earlier internal selectors may differ; no release matrix is recorded yet. |
-| Thunderbird newer than 154 Beta | Best effort | Future internal-selector changes cannot be predicted. |
-| Linux | Best effort | CSS color/material fallbacks exist; native AppKit materials do not. |
+| Thunderbird releases other than the exact rows above | Best effort | Internal selectors can change across releases. |
+| Other Linux compositors or niri builds without `background-effect` blur | Best effort | Theme CSS can load, but the tested sidebar blur may be unavailable. |
 | Windows | Best effort | CSS color/material fallbacks exist; native AppKit materials do not. |
+
+## Linux/niri port verification record
+
+Recorded on 2026-09-25 with Thunderbird 156.0 on native Wayland and niri
+`26.04 (v26.04-156-g953a8c3f-modified)`. The profile contained only offline,
+synthetic data. The Linux dark and light mail images are tracked in
+`docs/screenshots/`.
+
+| Area | Status | Evidence and scope |
+| --- | --- | --- |
+| Mail in dark and light appearances | Verified | Selected synthetic message, folder pane, card list, reader, attachment bar, and Today Pane were captured in both appearances. |
+| Sidebar transparency and niri blur | Verified | Stage 1 on/off captures showed the compositor blur. Final dark sidebars measured 204/255 alpha; the mail list and reader remained 255/255. See `LINUX_STAGE1.md`. |
+| Traffic-light title buttons | Partially verified | Left placement and active state appeared in real niri captures; inactive, hover, press, and maximize states were mapped to source images but were not captured. |
+| Address Book, Calendar, Settings, Compose | Partially verified | Each surface launched and rendered in the same isolated dark profile. Full interaction and layout combinations were not exercised. |
+| Table view, classic/wide panes, compact/touch density, tasks, chat, add-ons, account settings | Unverified | No Linux visual pass recorded. |
+| Reduced transparency, increased contrast, keyboard-only interaction | Unverified | CSS fallbacks exist, but no Linux manual pass was recorded. |
+
+The Linux compose window retains Thunderbird's Linux menu bar, and the main
+window retains its application menu. Their native menu placement differs from
+the macOS README images.
 
 ## 0.1.0 release verification record
 

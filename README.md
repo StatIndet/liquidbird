@@ -1,9 +1,9 @@
 # LiquidBird
 
-LiquidBird is an independent macOS 27 Liquid Glass theme for Mozilla
-Thunderbird. It preserves Thunderbird's mail, calendar, tasks, contacts, chat,
-compose, settings, account-settings, and add-ons functionality while making
-the application feel at home on a current Mac.
+LiquidBird is an independent Liquid Glass theme for Mozilla Thunderbird,
+originally built for macOS 27 and now adapted for Linux with niri. It preserves
+Thunderbird's mail, calendar, tasks, contacts, chat, compose, settings,
+account-settings, and add-ons functionality.
 
 | Dark appearance | Light appearance |
 | --- | --- |
@@ -13,18 +13,28 @@ These are captures of the real theme running in Thunderbird Beta. The profile,
 mail, contacts, and calendar entries are generated synthetic fixtures and
 contain no personal mailbox data.
 
-LiquidBird uses Thunderbird's native Gecko/AppKit appearance hooks for the
-window titlebar and sidebar. It follows the Mac's appearance, accent color,
-increased-contrast setting, reduced-transparency setting, and reduced-motion
-preference instead of baking one Mac configuration into the CSS.
+The Linux/niri port was also captured with Thunderbird 156.0 in an isolated
+Wayland profile on 2026-09-25:
+
+| Linux/niri dark | Linux/niri light |
+| --- | --- |
+| ![LiquidBird Linux port in dark appearance](docs/screenshots/liquidbird-linux-niri-dark.png) | ![LiquidBird Linux port in light appearance](docs/screenshots/liquidbird-linux-niri-light.png) |
+
+On macOS, LiquidBird uses Thunderbird's native Gecko/AppKit appearance hooks
+for the window titlebar and sidebar. On Linux, its platform layer makes the
+sidebar transparent so a compatible niri build can blur the background. The
+macOS theme follows the Mac's appearance, accent color, increased-contrast
+setting, reduced-transparency setting, and reduced-motion preference.
 
 ## Highlights
 
 - Native macOS sidebar and titlebar vibrancy where Gecko exposes it
+- Linux/niri sidebar transparency with compositor background blur
 - macOS 27-style concentric corners, segmented toolbar groups, and restrained glass
 - Physical press feedback on interactive glass controls
 - Native focused/inactive selection states and semantic toggle treatment
-- System accent color, light/dark appearance, density choices, and accessibility adaptations
+- System accent color on macOS; screenshot-matched blue on Linux (customizable in `custom.css`)
+- Light/dark appearance, density choices, and accessibility adaptations
 - Complete replacement glyph set from the freely redistributable Lucide set
 - Styling for mail folders, message lists and readers, search, quick filter,
   compose, contacts, calendar, tasks, chat, dialogs, settings, account settings,
@@ -33,10 +43,12 @@ preference instead of baking one Mac configuration into the CSS.
 
 ## Compatibility
 
-LiquidBird 0.1.0 has been manually exercised with Thunderbird Beta 154.0
-(build 15426.7.21) on macOS 27. macOS is the supported platform. Other
-Thunderbird versions, Linux, and Windows are currently unverified and are
-best-effort only; non-macOS platforms cannot use native AppKit materials.
+The original LiquidBird 0.1.0 was manually exercised with Thunderbird Beta
+154.0 (build 15426.7.21) on macOS 27. The Linux/niri adaptation was developed
+with Thunderbird 156.0 on native Wayland. Linux needs compositor blur for the
+translucent background shown in the [Linux setup guide](docs/LINUX.md);
+non-macOS platforms cannot use native AppKit materials. Other Thunderbird
+versions and compositors remain best-effort.
 
 Thunderbird can rename its internal selectors in any update. Consult the
 [tested configuration matrix](docs/COMPATIBILITY.md) and
@@ -50,6 +62,9 @@ Thunderbird can rename its internal selectors in any update. Consult the
 
 ## Install
 
+For Linux with niri, follow the [Linux setup and removal guide](docs/LINUX.md).
+The steps below describe the macOS installation.
+
 Use a tagged release rather than downloading a moving development snapshot.
 The release ZIP contains a ready-to-copy `chrome` directory.
 
@@ -61,8 +76,8 @@ The release ZIP contains a ready-to-copy `chrome` directory.
 4. If the profile already contains a `chrome` directory, duplicate it and name
    the copy something such as `chrome.backup-2026-07-25`. Keep that backup
    outside the active `chrome` directory.
-5. Copy `liquidbird.css`, `liquidbird-content.css`, and the complete `Icons`
-   directory from the release into the profile's `chrome` directory.
+5. Copy `liquidbird.css`, `liquidbird-content.css`, and the complete `Icons` and
+   `linux` directories from the release into the profile's `chrome` directory.
 6. Configure the two loader files without overwriting existing customizations:
 
 ### `userChrome.css`
@@ -73,6 +88,9 @@ CSS rule:
 
 ```css
 @import url("liquidbird.css");
+@import url("linux/chrome.css");
+@import url("linux/mail-layout.css");
+@import url("linux/titlebuttons.css");
 @import url("custom.css");
 ```
 
@@ -84,6 +102,7 @@ CSS rule:
 
 ```css
 @import url("liquidbird-content.css");
+@import url("linux/content.css");
 ```
 
 ### `custom.css`
@@ -100,8 +119,8 @@ view, but LiquidBird also contains rules for the other documented combinations.
 ## Updating
 
 1. Back up the active `chrome` directory and fully quit Thunderbird.
-2. Replace only `liquidbird.css`, `liquidbird-content.css`, and `Icons` with the
-   files from the new release.
+2. Replace only `liquidbird.css`, `liquidbird-content.css`, `Icons`, and `linux`
+   with the files from the new release.
 3. Compare release loader files with your existing `userChrome.css` and
    `userContent.css`; merge import changes rather than overwriting either file.
 4. Keep the existing `custom.css` unchanged.
@@ -118,7 +137,7 @@ For example, a personal override belongs in `custom.css`:
 ## Disable, roll back, or uninstall
 
 To disable LiquidBird temporarily, fully quit Thunderbird and comment out the
-three LiquidBird imports in `userChrome.css` and `userContent.css`, then reopen
+LiquidBird imports in `userChrome.css` and `userContent.css`, then reopen
 Thunderbird. Alternatively, set
 `toolkit.legacyUserProfileCustomizations.stylesheets` to `false` to disable all
 profile CSS customizations.
@@ -132,7 +151,7 @@ To uninstall LiquidBird while retaining other custom CSS:
 2. Remove the LiquidBird import lines from `userChrome.css` and
    `userContent.css`.
 3. Remove `liquidbird.css`, `liquidbird-content.css`, and the LiquidBird `Icons`
-   directory after confirming that no personal rules use them.
+   and `linux` directories after confirming that no personal rules use them.
 4. Keep or remove `custom.css` according to whether it contains personal work.
 5. Reopen Thunderbird.
 
@@ -189,6 +208,8 @@ python3 scripts/demo.py capture \
 
 See the [synthetic screenshot workflow](docs/SCREENSHOTS.md) for selecting UI
 surfaces, capturing light and dark appearances, and inspecting the demo safely.
+For Linux/niri installation, configuration, and the material experiment, see
+[the Linux guide](docs/LINUX.md) and [stage 1 findings](docs/LINUX_STAGE1.md).
 
 See [CONTRIBUTING.md](CONTRIBUTING.md), [SUPPORT.md](SUPPORT.md),
 [CHANGELOG.md](CHANGELOG.md), and [the release guide](docs/RELEASING.md) for
@@ -203,7 +224,8 @@ The research and implementation rationale are in
 [`docs/DESIGN.md`](docs/DESIGN.md).
 
 Interface icons are unmodified Lucide SVG source files distributed under the
-ISC license, with a subset also covered by Feather's MIT license. FluentBird
+ISC license, with a subset also covered by Feather's MIT license. The Linux
+title-button images come from the MIT-licensed MacTahoe GTK theme. FluentBird
 was used as an MIT-licensed selector-coverage reference. Full notices and
 pinned upstream revisions are in
 [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).

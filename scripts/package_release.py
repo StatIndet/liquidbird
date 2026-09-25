@@ -19,21 +19,36 @@ CHROME_FILES = {
     "userContent.css": "chrome/userContent.css",
     "custom.css": "chrome/custom.css.example",
 }
+LINUX_RELEASE_SUFFIXES = {".css", ".svg", ".png", ".webp", ".avif", ".woff", ".woff2"}
+LINUX_ENTRY_POINTS = {
+    "linux/chrome.css",
+    "linux/content.css",
+    "linux/mail-layout.css",
+    "linux/titlebuttons.css",
+}
 DOCUMENT_FILES = [
     "CHANGELOG.md",
     "LICENSE",
     "README.md",
     "THIRD_PARTY_NOTICES.md",
     "VERSION",
+    "checksums/third-party.sha256",
     "docs/COMPATIBILITY.md",
     "docs/COVERAGE.md",
     "docs/DESIGN.md",
+    "docs/LINUX.md",
+    "docs/LINUX_STAGE1.md",
     "docs/RELEASING.md",
     "docs/SCREENSHOTS.md",
     "docs/screenshots/liquidbird-mail-dark.png",
     "docs/screenshots/liquidbird-mail-light.png",
+    "docs/screenshots/liquidbird-linux-niri-dark.png",
+    "docs/screenshots/liquidbird-linux-niri-light.png",
     "licenses/FLUENTBIRD.txt",
     "licenses/LUCIDE.txt",
+    "licenses/MACTAHOE.txt",
+    "integration/niri.kdl",
+    "integration/niri-stage1.kdl",
     "scripts/demo.py",
 ]
 
@@ -57,6 +72,19 @@ def expected_files() -> dict[str, Path]:
     files = {destination: ROOT / source for source, destination in CHROME_FILES.items()}
     for icon in sorted((ROOT / "Icons").glob("*.svg")):
         files[f"chrome/Icons/{icon.name}"] = icon
+    linux_root = ROOT / "linux"
+    for source in sorted(linux_root.rglob("*")):
+        if not source.is_file():
+            continue
+        relative = source.relative_to(ROOT).as_posix()
+        if source.is_symlink() or source.suffix.lower() not in LINUX_RELEASE_SUFFIXES:
+            raise SystemExit(f"Unexpected Linux release input: {relative}")
+        files[f"chrome/{relative}"] = source
+    missing_linux = LINUX_ENTRY_POINTS - {
+        path.relative_to(ROOT).as_posix() for path in files.values()
+    }
+    if missing_linux:
+        raise SystemExit("Linux entry points are missing: " + ", ".join(sorted(missing_linux)))
     for relative in DOCUMENT_FILES:
         files[relative] = ROOT / relative
     return files

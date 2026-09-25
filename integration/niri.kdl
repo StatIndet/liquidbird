@@ -1,0 +1,24 @@
+// LiquidBird on the locally tested niri build with background-effect support.
+// Match the app-id reported by `niri msg pick-window` on native Wayland.
+window-rule {
+    match app-id=r#"^org\.mozilla\.Thunderbird$"#
+
+    // The CSS supplies alpha only for the chrome material. Keep text and
+    // message content fully opaque at the compositor level.
+    opacity 1.0
+    draw-border-with-background false
+    geometry-corner-radius 18
+    clip-to-geometry true
+
+    background-effect {
+        blur true
+        xray false
+    }
+
+    popups {
+        background-effect {
+            blur true
+            xray false
+        }
+    }
+}

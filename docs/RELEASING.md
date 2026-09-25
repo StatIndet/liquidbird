@@ -21,8 +21,11 @@ released frequently without implying support for every Thunderbird version.
    ```
 
 6. Inspect `dist/LiquidBird-<version>.zip`. It must contain the `chrome/`
-   directory, `custom.css.example` rather than `custom.css`, the license and
-   notices, and the release documentation.
+   directory, `chrome/linux/` (including `chrome.css` and `content.css`),
+   `integration/niri.kdl`, `custom.css.example` rather than `custom.css`, all
+   bundled-asset licenses, `checksums/third-party.sha256`, notices, and the
+   release documentation. Check that no temporary files from the Linux visual
+   tests entered the ZIP.
 7. Verify the checksum from `dist/SHA256SUMS`.
 
 ## Publish
